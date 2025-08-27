@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Smart Multi Calculator — Full</title>
+  <title>Smart Multi Calculator — With Buttons</title>
   <style>
     :root{
       --bg:#f5f7fb; --text:#111; --card:#fff;
@@ -21,14 +21,14 @@
     .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
     main{max-width:980px;margin:18px auto;padding:0 16px}
     .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04);color:var(--text)}
     .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
     .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
     .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
     .panel.active{display:block}
     h2{margin:0 0 10px 0;color:var(--accent-2)}
     label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
+    input,select,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text);font-size:1rem}
     button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
     button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
     .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
@@ -39,12 +39,20 @@
     .small{font-size:0.85rem;color:var(--muted)}
     .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
     footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+    .op-row{display:flex;gap:8px;margin-top:8px}
+    .op-row button{flex:1;padding:10px}
+    code{background:rgba(0,0,0,0.05);padding:2px 6px;border-radius:4px}
+    .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+    .kbd-btn{padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;font-size:1.05rem;cursor:pointer}
+    .kbd-btn.op{background:rgba(11,121,208,0.08);border-color:rgba(11,121,208,0.18)}
+    .kbd-btn.equal{background:var(--accent);color:#fff;border:none}
+    .kbd-fn{grid-column:span 2}
     @media (max-width:420px){.row{flex-direction:column}}
   </style>
 </head>
 <body data-theme="light">
   <header>
-    <h1>Smart Multi Calculator (Full)</h1>
+    <h1>Smart Multi Calculator (Buttons)</h1>
     <div>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
     </div>
@@ -54,65 +62,84 @@
     <!-- MAIN MENU -->
     <section id="menuGrid" class="grid-menu" aria-label="Main menu">
       <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
-        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
+        <div class="icon">🧮</div><div>Basic</div><div class="small">free expression + buttons, memory & history</div>
       </div>
       <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
-        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">functions + buttons</div>
       </div>
       <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
-        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
+        <div class="icon">💻</div><div>Programmer</div><div class="small">expr operands allowed</div>
       </div>
       <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
-        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
+        <div class="icon">💰</div><div>Finance</div><div class="small">expr supported</div>
       </div>
       <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
-        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
+        <div class="icon">🏦</div><div>Loan</div><div class="small">EMI calc</div>
       </div>
       <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
-        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
+        <div class="icon">📊</div><div>Percentage</div><div class="small">% calculations</div>
       </div>
       <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
-        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">expr supported</div>
       </div>
       <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
-        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">expr supported</div>
       </div>
       <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
-        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
+        <div class="icon">📈</div><div>Statistics</div><div class="small">expr per item</div>
       </div>
       <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
-        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">expr per item</div>
       </div>
       <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
-        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
+        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3</div>
       </div>
       <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
-        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
+        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">date pickers</div>
       </div>
     </section>
 
-    <!-- PANELS -->
-    <!-- Basic -->
+    <!-- BASIC -->
     <section id="basic" class="panel" aria-hidden="true">
       <h2>Basic Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
-        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
+      <div class="small">Type an expression or use keypad below. Examples: <code>12+3*4</code>, <code>5^2</code>, <code>sqrt(16)</code>.</div>
+      <label for="basicExpr">Expression</label>
+      <input id="basicExpr" type="text" aria-label="basic expression" placeholder="Enter expression or use buttons">
+      
+      <!-- keypad (calculator-like) -->
+      <div class="keypad" aria-hidden="false">
+        <button class="kbd-btn" onclick="basicAppend('7')">7</button>
+        <button class="kbd-btn" onclick="basicAppend('8')">8</button>
+        <button class="kbd-btn" onclick="basicAppend('9')">9</button>
+        <button class="kbd-btn op" onclick="basicAppend('/')">÷</button>
+
+        <button class="kbd-btn" onclick="basicAppend('4')">4</button>
+        <button class="kbd-btn" onclick="basicAppend('5')">5</button>
+        <button class="kbd-btn" onclick="basicAppend('6')">6</button>
+        <button class="kbd-btn op" onclick="basicAppend('*')">×</button>
+
+        <button class="kbd-btn" onclick="basicAppend('1')">1</button>
+        <button class="kbd-btn" onclick="basicAppend('2')">2</button>
+        <button class="kbd-btn" onclick="basicAppend('3')">3</button>
+        <button class="kbd-btn op" onclick="basicAppend('-')">−</button>
+
+        <button class="kbd-btn" onclick="basicAppend('0')">0</button>
+        <button class="kbd-btn" onclick="basicAppend('.')">.</button>
+        <button class="kbd-btn" onclick="basicAppend('**')">^</button>
+        <button class="kbd-btn op" onclick="basicAppend('+')">+</button>
+
+        <button class="kbd-btn kbd-fn" onclick="basicAppend('(')">(</button>
+        <button class="kbd-btn kbd-fn" onclick="basicAppend(')')">)</button>
+        <button class="kbd-btn kbd-fn" onclick="basicBackspace()">⌫</button>
+        <button class="kbd-btn equal" onclick="basicEval()">=</button>
       </div>
-      <label for="b_op">Operation</label>
-      <select id="b_op" aria-label="operation">
-        <option value="add">+</option>
-        <option value="sub">−</option>
-        <option value="mul">×</option>
-        <option value="div">÷</option>
-      </select>
 
       <div style="margin-top:8px">
-        <button class="btn action" onclick="basicCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="basicClear()">Clear</button>
-        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
-        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
-        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
+        <button class="btn" onclick="basicEval()">Calculate</button>
+        <button class="ghost" onclick="basicClear()">Clear</button>
+        <button class="ghost" onclick="basicMemoryAdd()">M+</button>
+        <button class="ghost" onclick="basicMemoryRecall()">MR</button>
+        <button class="ghost" onclick="basicMemoryClear()">MC</button>
       </div>
 
       <div id="basicError" class="error" role="status" aria-live="polite"></div>
@@ -124,20 +151,59 @@
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Scientific -->
+    <!-- SCIENTIFIC -->
     <section id="scientific" class="panel" aria-hidden="true">
       <h2>Scientific Calculator</h2>
-      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
+      <div class="small">Functions & keypad. Use <code>sin(30)</code>, <code>log(10)</code>, <code>sqrt(16)</code>. Angle default: degrees.</div>
       <label>Angle mode</label>
       <select id="s_mode" aria-label="angle mode">
         <option value="deg">Degrees</option>
         <option value="rad">Radians</option>
       </select>
       <label for="s_expr">Expression</label>
-      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
+      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="Use functions or keypad">
+      
+      <!-- scientific keypad -->
+      <div class="keypad" style="margin-top:10px">
+        <button class="kbd-btn" onclick="sciAppend('7')">7</button>
+        <button class="kbd-btn" onclick="sciAppend('8')">8</button>
+        <button class="kbd-btn" onclick="sciAppend('9')">9</button>
+        <button class="kbd-btn op" onclick="sciAppend('/')">÷</button>
+
+        <button class="kbd-btn" onclick="sciAppend('4')">4</button>
+        <button class="kbd-btn" onclick="sciAppend('5')">5</button>
+        <button class="kbd-btn" onclick="sciAppend('6')">6</button>
+        <button class="kbd-btn op" onclick="sciAppend('*')">×</button>
+
+        <button class="kbd-btn" onclick="sciAppend('1')">1</button>
+        <button class="kbd-btn" onclick="sciAppend('2')">2</button>
+        <button class="kbd-btn" onclick="sciAppend('3')">3</button>
+        <button class="kbd-btn op" onclick="sciAppend('-')">−</button>
+
+        <button class="kbd-btn" onclick="sciAppend('0')">0</button>
+        <button class="kbd-btn" onclick="sciAppend('.')">.</button>
+        <button class="kbd-btn" onclick="sciAppend('**')">^</button>
+        <button class="kbd-btn op" onclick="sciAppend('+')">+</button>
+
+        <button class="kbd-btn" onclick="sciAppend('(')">(</button>
+        <button class="kbd-btn" onclick="sciAppend(')')">)</button>
+        <button class="kbd-btn" onclick="sciAppend('Math.PI')">π</button>
+        <button class="kbd-btn" onclick="sciAppend('Math.E')">e</button>
+
+        <button class="kbd-btn" onclick="sciAppend('sin(')">sin</button>
+        <button class="kbd-btn" onclick="sciAppend('cos(')">cos</button>
+        <button class="kbd-btn" onclick="sciAppend('tan(')">tan</button>
+        <button class="kbd-btn" onclick="sciAppend('sqrt(')">sqrt</button>
+
+        <button class="kbd-btn" onclick="sciAppend('log(')">ln</button>
+        <button class="kbd-btn" onclick="sciAppend('Math.log10(')">log10</button>
+        <button class="kbd-btn" onclick="sciAppend('exp(')">exp</button>
+        <button class="kbd-btn equal" onclick="scientificCalculate()">=</button>
+      </div>
+
       <div style="margin-top:8px">
-        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
+        <button class="btn" onclick="scientificCalculate()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('scientific')">Reset</button>
       </div>
       <div id="sError" class="error"></div>
       <div id="sResult" class="result">Result: -</div>
@@ -147,10 +213,11 @@
     <!-- Programmer -->
     <section id="programmer" class="panel" aria-hidden="true">
       <h2>Programmer Calculator</h2>
+      <div class="small">Expressions allowed for operands. Use keypad in Basic/Scientific to compose expressions then copy here if needed.</div>
       <div class="row">
-        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
+        <div class="col"><label for="progInput">Number (decimal or expression)</label><input id="progInput" type="text" aria-label="programmer input" placeholder="e.g. 15 or 8+7"></div>
         <div class="col">
-          <label for="progBase">Bitwise / convert</label>
+          <label for="progOp">Operation</label>
           <select id="progOp" aria-label="programmer op">
             <option value="toBin">To Binary</option>
             <option value="toHex">To Hex</option>
@@ -163,11 +230,11 @@
           </select>
         </div>
       </div>
-      <label for="progSecond">Second operand (for bitwise/shift)</label>
-      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
+      <label for="progSecond">Second operand (expr) — for bitwise/shift</label>
+      <input id="progSecond" type="text" aria-label="second operand" placeholder="e.g. 5 or 4+1">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="programmerCalc()">Run</button>
-        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
+        <button class="btn" onclick="programmerCalc()">Run</button>
+        <button class="ghost" onclick="resetPanel('programmer')">Reset</button>
       </div>
       <div id="progError" class="error"></div>
       <div id="progResult" class="result">Result: -</div>
@@ -182,12 +249,12 @@
         <option value="simple">Simple Interest</option>
         <option value="compound">Compound Interest</option>
       </select>
-      <label>Principal</label><input id="finP" type="number" aria-label="principal">
-      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
-      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
+      <label>Principal (expression allowed)</label><input id="finP" type="text" aria-label="principal" placeholder="e.g. 1000*1.1">
+      <label>Rate (%) per year (expression allowed)</label><input id="finR" type="text" aria-label="rate percent" placeholder="e.g. 5 or 2+3">
+      <label>Time (years) (expression allowed)</label><input id="finT" type="text" aria-label="time years" placeholder="e.g. 2 or 1+1">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="financeCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
+        <button class="btn" onclick="financeCalc()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('finance')">Reset</button>
       </div>
       <div id="finError" class="error"></div>
       <div id="finResult" class="result">Result: -</div>
@@ -197,12 +264,12 @@
     <!-- Loan -->
     <section id="loan" class="panel" aria-hidden="true">
       <h2>Loan EMI Calculator</h2>
-      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
-      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
-      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
+      <label>Loan amount (expression)</label><input id="loanP" type="text" aria-label="loan amount" placeholder="e.g. 10000*1">
+      <label>Annual interest (%) (expression)</label><input id="loanR" type="text" aria-label="loan rate" placeholder="e.g. 7">
+      <label>Tenor (years) (expression)</label><input id="loanT" type="text" aria-label="loan years" placeholder="e.g. 3">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="loanCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
+        <button class="btn" onclick="loanCalculate()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('loan')">Reset</button>
       </div>
       <div id="loanError" class="error"></div>
       <div id="loanResult" class="result">Result: -</div>
@@ -212,25 +279,28 @@
     <!-- Percentage -->
     <section id="percentage" class="panel" aria-hidden="true">
       <h2>Percentage Calculator</h2>
-      <label>Value</label><input id="pctValue" type="number" aria-label="value">
-      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="percentageCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
-      </div>
-      <div id="pctError" class="error"></div>
-      <div id="pctResult" class="result">Result: -</div>
+      <select id="percentMode" aria-label="percentage mode">
+        <option value="of">X% of Y</option>
+        <option value="what">X is what % of Y</option>
+        <option value="change">% Change (from X to Y)</option>
+      </select>
+      <label>First value (expression)</label><input type="text" id="p1" placeholder="e.g. 20 or 20+5">
+      <label>Second value (expression)</label><input type="text" id="p2" placeholder="e.g. 200 or 100+100">
+      <button class="btn" onclick="calcPercentage()">Calculate</button>
+      <button class="ghost" onclick="resetPanel('percentage')">Reset</button>
+      <div id="pResult" class="result">Result: -</div>
+      <div id="pError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
     <!-- BMI -->
     <section id="bmi" class="panel" aria-hidden="true">
       <h2>BMI Calculator</h2>
-      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
-      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
+      <label>Weight (kg) — expression allowed</label><input id="bmiW" type="text" aria-label="weight kg" placeholder="e.g. 70 or 65+5">
+      <label>Height (cm) — expression allowed</label><input id="bmiH" type="text" aria-label="height cm" placeholder="e.g. 175">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
+        <button class="btn" onclick="bmiCalculate()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('bmi')">Reset</button>
       </div>
       <div id="bmiError" class="error"></div>
       <div id="bmiResult" class="result">Result: -</div>
@@ -240,7 +310,7 @@
     <!-- Unit Converter -->
     <section id="unit" class="panel" aria-hidden="true">
       <h2>Unit Converter</h2>
-      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
+      <label>Value (expression)</label><input id="unitV" type="text" aria-label="unit value" placeholder="e.g. 1000/2">
       <label>Conversion</label>
       <select id="unitOp" aria-label="unit op">
         <optgroup label="Length">
@@ -264,8 +334,8 @@
         </optgroup>
       </select>
       <div style="margin-top:8px">
-        <button class="btn action" onclick="unitConvert()">Convert</button>
-        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
+        <button class="btn" onclick="unitConvert()">Convert</button>
+        <button class="ghost" onclick="resetPanel('unit')">Reset</button>
       </div>
       <div id="unitError" class="error"></div>
       <div id="unitResult" class="result">Result: -</div>
@@ -275,11 +345,11 @@
     <!-- Statistics -->
     <section id="statistics" class="panel" aria-hidden="true">
       <h2>Statistics</h2>
-      <label>Numbers (comma separated)</label>
-      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
+      <label>Numbers (comma separated, each can be expression)</label>
+      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px" placeholder="e.g. 2, 3+1, 10/2"></textarea>
       <div style="margin-top:8px">
-        <button class="btn action" onclick="statsCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
+        <button class="btn" onclick="statsCalculate()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('statistics')">Reset</button>
       </div>
       <div id="statsError" class="error"></div>
       <div id="statsResult" class="result">Result: -</div>
@@ -289,35 +359,36 @@
     <!-- GCD / LCM -->
     <section id="gcdlcm" class="panel" aria-hidden="true">
       <h2>GCD & LCM</h2>
-      <label>Numbers (comma separated, integers)</label>
-      <input id="gNums" aria-label="gcd numbers">
+      <label>Numbers (comma separated, each can be expression)</label>
+      <input id="gNums" aria-label="gcd numbers" placeholder="e.g. 12, 6+6, 30/1">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
+        <button class="btn" onclick="calcGcdLcm()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('gcdlcm')">Reset</button>
       </div>
       <div id="gError" class="error"></div>
       <div id="gResult" class="result">Result: -</div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Matrix (2x2 & 3x3) -->
+    <!-- Matrix -->
     <section id="matrix" class="panel" aria-hidden="true">
       <h2>Matrix (2x2 / 3x3)</h2>
-      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
+      <div class="small">Enter elements as expressions row-wise separated by commas. For 2x2 enter 4 expressions; for 3x3 enter 9.</div>
       <label>Matrix A (comma separated)</label>
-      <input id="mA" aria-label="matrix A">
-      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
+      <input id="mA" aria-label="matrix A" placeholder="e.g. 1, 2, 3, 4 or 1+1,2,3,4">
+      <label>Matrix B (optional, comma separated)</label>
       <input id="mB" aria-label="matrix B">
       <label>Operation</label>
       <select id="mOp" aria-label="matrix op">
         <option value="det">Determinant (A)</option>
         <option value="inv">Inverse (A)</option>
+        <option value="trans">Transpose (A)</option>
         <option value="add">A + B</option>
         <option value="mul">A × B</option>
       </select>
       <div style="margin-top:8px">
-        <button class="btn action" onclick="matrixCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
+        <button class="btn" onclick="matrixCalc()">Calculate</button>
+        <button class="ghost" onclick="resetPanel('matrix')">Reset</button>
       </div>
       <div id="mError" class="error"></div>
       <div id="mResult" class="result">Result: -</div>
@@ -332,8 +403,8 @@
       <label>Reference date (optional — leave blank = today)</label>
       <input id="refdate" type="date" aria-label="reference date">
       <div style="margin-top:8px">
-        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
-        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
+        <button class="btn" onclick="ageCalc()">Calculate Age</button>
+        <button class="ghost" onclick="resetPanel('age')">Reset</button>
       </div>
       <div id="ageError" class="error"></div>
       <div id="ageResult" class="result">Result: -</div>
@@ -344,7 +415,7 @@
   </main>
 
 <script>
-/* ========== THEME ========== */
+/* ---------------- THEME ---------------- */
 function toggleTheme(){
   const body=document.body;
   const btn=document.getElementById('themeBtn');
@@ -352,15 +423,16 @@ function toggleTheme(){
   else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
 }
 
-/* ========== NAV ========== */
+/* ---------------- NAV ---------------- */
 function openPanel(id){
   document.getElementById('menuGrid').style.display='none';
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
+  });
   const panel=document.getElementById(id);
   panel.classList.add('active');
   panel.style.display='block';
   panel.setAttribute('aria-hidden','false');
-  // fix: ensure text color on menu cards (handled by CSS variables)
 }
 function goHome(){
   document.getElementById('menuGrid').style.display='grid';
@@ -369,190 +441,250 @@ function goHome(){
   });
 }
 
-/* ========== UTILS ========== */
-function parseNumberList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
+/* ---------------- EVALUATOR (sanitized-ish) ---------------- */
+function sanitizeAndEval(expr, angleMode = null){
+  if(typeof expr !== 'string' && typeof expr !== 'number') throw new Error('Invalid expression');
+  let e = String(expr).trim();
+  e = e.replace(/÷/g, '/').replace(/×/g, '*').replace(/\^/g,'**');
+  // map common functions
+  const funcs = ['sqrt','sin','cos','tan','log10','log','ln','exp','abs','ceil','floor','round','pow'];
+  e = e.replace(/\bpi\b/gi,'Math.PI').replace(/\be\b/gi,'Math.E');
+  funcs.forEach(f=>{
+    const r = new RegExp('\\b'+f+'\\s*\\(', 'gi');
+    let rep = f;
+    if(f==='ln') rep = 'Math.log(';
+    else if(f==='log10') rep = 'Math.log10(';
+    else if(f==='log') rep = 'Math.log(';
+    else if(f==='pow') rep = 'Math.pow(';
+    else rep = 'Math.'+f+'(';
+    e = e.replace(r, rep);
+  });
+  if(!window.Math.log10) Math.log10 = n => Math.log(n)/Math.LN10;
+  if(angleMode === 'deg'){
+    e = e.replace(/Math\.sin\(([^)]+)\)/g, 'Math.sin(($1)*Math.PI/180)');
+    e = e.replace(/Math\.cos\(([^)]+)\)/g, 'Math.cos(($1)*Math.PI/180)');
+    e = e.replace(/Math\.tan\(([^)]+)\)/g, 'Math.tan(($1)*Math.PI/180)');
+  }
+  const forbidden = ['window','document','constructor','prototype','eval','Function','=>'];
+  const low = e.toLowerCase();
+  for(const f of forbidden) if(low.includes(f)) throw new Error('Forbidden token in expression');
+  try{
+    const fn = new Function('"use strict"; return (' + e + ')');
+    const value = fn();
+    if(typeof value === 'number' && !isNaN(value)) return value;
+    if(typeof value === 'boolean' || typeof value === 'string') return Number(value);
+    return value;
+  } catch(err){
+    throw new Error('Invalid expression');
+  }
 }
-function isInt(n){ return Number.isInteger(n); }
 
-/* ========== BASIC (history + memory) ========== */
+/* ---------------- HELPERS ---------------- */
+function parseListExpressionsAsNumbers(str){
+  if(!str) return [];
+  return str.split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>{
+    try{ return sanitizeAndEval(s); } catch { return NaN; }
+  }).filter(n=>!isNaN(n));
+}
+
+/* ---------------- BASIC (buttons + eval) ---------------- */
 let basicMemory = null;
 let basicHistory = [];
-function basicCalculate(){
-  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
-  const op=document.getElementById('b_op').value;
-  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
-  error.innerText=''; out.innerText='Result: -';
-  const x=parseFloat(a), y=parseFloat(b);
-  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
-  let r;
-  if(op==='add') r=x+y;
-  if(op==='sub') r=x-y;
-  if(op==='mul') r=x*y;
-  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
-  out.innerText='Result: '+r;
-  basicHistory.push(`${x} ${op} ${y} = ${r}`);
-  if(basicHistory.length>20) basicHistory.shift();
-  renderBasicHistory();
+
+function basicAppend(tok){
+  const inp=document.getElementById('basicExpr');
+  // when user presses ^ we used ** internally; keypad uses ** already
+  inp.value = (inp.value || '') + tok;
+  inp.focus();
+}
+function basicBackspace(){
+  const inp=document.getElementById('basicExpr');
+  inp.value = inp.value.slice(0,-1);
+  inp.focus();
+}
+function basicClear(){
+  document.getElementById('basicExpr').value='';
+  document.getElementById('basicResult').innerText='Result: -';
+  document.getElementById('basicError').innerText='';
+}
+function basicEval(){
+  const expr = document.getElementById('basicExpr').value;
+  const err=document.getElementById('basicError'), out=document.getElementById('basicResult');
+  err.innerText=''; out.innerText='Result: -';
+  if(expr===undefined || expr===null || String(expr).trim()===''){ err.innerText='Enter expression'; return; }
+  try{
+    const val = sanitizeAndEval(expr);
+    out.innerText = 'Result: ' + val;
+    basicHistory.push(`${expr} = ${val}`);
+    if(basicHistory.length>20) basicHistory.shift();
+    renderBasicHistory();
+  }catch(e){
+    err.innerText = e.message || 'Invalid expression';
+  }
 }
 function renderBasicHistory(){
   const box=document.getElementById('basicHistory');
-  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
+  if(!box) return;
+  box.innerHTML = basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
 }
-function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
-function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
-function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
+function basicMemoryAdd(){
+  const res=document.getElementById('basicResult').innerText.replace('Result: ','');
+  if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save');
+}
+function basicMemoryRecall(){
+  if(basicMemory!==null) document.getElementById('basicExpr').value += basicMemory;
+  else alert('Memory empty');
+}
 function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
 
-/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
+/* ---------------- SCIENTIFIC BUTTON HELPERS ---------------- */
+function sciAppend(tok){
+  const inp = document.getElementById('s_expr');
+  inp.value = (inp.value || '') + tok;
+  inp.focus();
+}
 function scientificCalculate(){
   const expr=document.getElementById('s_expr').value;
   const mode=document.getElementById('s_mode').value;
-  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
-  err.innerText=''; resEl.innerText='Result: -';
+  const err=document.getElementById('sError'), out=document.getElementById('sResult');
+  err.innerText=''; out.innerText='Result: -';
   if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
   try{
-    // Map functions to Math.* and handle ^ as **
-    let e=expr.replace(/√/g,'sqrt');
-    e=e.replace(/\^/g,'**');
-    // safe replacements (case-insensitive)
-    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
-      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
-      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
-      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
-      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
-      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
-      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
-      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
-      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
-      .replace(/(?<![\w.])e\b/gi,'Math.E');
-    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
-    if(mode==='deg'){
-      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
-      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
-      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
-    }
-    // allow Math.log10 helper
-    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
-    // Evaluate (note: works offline; user input only)
-    const value = eval(e);
-    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
-    else resEl.innerText = 'Result: ' + value;
-  }catch(errCatch){
-    err.innerText = 'Invalid expression';
+    const value = sanitizeAndEval(expr, mode);
+    out.innerText = 'Result: ' + value;
+  }catch(e){
+    err.innerText = e.message || 'Invalid expression';
   }
 }
 
-/* ========== PROGRAMMER (base & bitwise) ========== */
+/* ---------------- PROGRAMMER ---------------- */
 function programmerCalc(){
-  const n = parseInt(document.getElementById('progInput').value);
+  const aExpr = document.getElementById('progInput').value;
+  const bExpr = document.getElementById('progSecond').value;
   const op = document.getElementById('progOp').value;
-  const sec = parseInt(document.getElementById('progSecond').value);
-  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
+  const err=document.getElementById('progError'), out=document.getElementById('progResult');
   err.innerText=''; out.innerText='Result: -';
-  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
-  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
   try{
+    const aVal = sanitizeAndEval(aExpr);
+    if(isNaN(aVal)) { err.innerText='Invalid primary operand'; return; }
+    let secVal = null;
+    if(['and','or','xor','shl','shr'].includes(op)){
+      secVal = sanitizeAndEval(bExpr);
+      if(isNaN(secVal)){ err.innerText='Invalid second operand'; return; }
+    }
     let r;
-    if(op==='toBin') r = n.toString(2);
-    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
-    if(op==='toOct') r = n.toString(8);
-    if(op==='and') r = (n & sec);
-    if(op==='or') r = (n | sec);
-    if(op==='xor') r = (n ^ sec);
-    if(op==='shl') r = (n << sec);
-    if(op==='shr') r = (n >> sec);
+    if(op==='toBin') r = (aVal|0).toString(2);
+    if(op==='toHex') r = '0x'+(aVal|0).toString(16).toUpperCase();
+    if(op==='toOct') r = (aVal|0).toString(8);
+    if(op==='and') r = (aVal & secVal);
+    if(op==='or') r = (aVal | secVal);
+    if(op==='xor') r = (aVal ^ secVal);
+    if(op==='shl') r = (aVal << secVal);
+    if(op==='shr') r = (aVal >> secVal);
     out.innerText = 'Result: '+ r;
-  }catch(e){ err.innerText='Error computing'; }
+  }catch(e){ err.innerText = e.message || 'Error computing'; }
 }
 
-/* ========== FINANCE ========== */
+/* ---------------- FINANCE / LOAN / PERCENTAGE / BMI / UNIT / STATISTICS / GCD-LCM / MATRIX / AGE ---------------- */
 function financeCalc(){
-  const type=document.getElementById('finType').value;
-  const P=parseFloat(document.getElementById('finP').value);
-  const R=parseFloat(document.getElementById('finR').value)/100;
-  const T=parseFloat(document.getElementById('finT').value);
-  const e=document.getElementById('finError'), o=document.getElementById('finResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
-  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
-  o.innerText='Result: '+ amount.toFixed(2);
+  try{
+    const type=document.getElementById('finType').value;
+    const P = sanitizeAndEval(document.getElementById('finP').value);
+    const R = sanitizeAndEval(document.getElementById('finR').value)/100;
+    const T = sanitizeAndEval(document.getElementById('finT').value);
+    const e=document.getElementById('finError'), o=document.getElementById('finResult');
+    e.innerText=''; o.innerText='Result: -';
+    if([P,R,T].some(v=>isNaN(v))){ e.innerText='Fill all fields with valid expressions'; return; }
+    const amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
+    o.innerText='Result: '+ amount.toFixed(4);
+  }catch(err){
+    document.getElementById('finError').innerText = err.message || 'Invalid expression';
+  }
 }
-
-/* ========== LOAN ========== */
 function loanCalculate(){
-  const P=parseFloat(document.getElementById('loanP').value);
-  const annual=parseFloat(document.getElementById('loanR').value);
-  const years=parseFloat(document.getElementById('loanT').value);
-  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
-  const r = annual/100/12; const n = years*12;
-  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
-}
-
-/* ========== PERCENTAGE ========== */
-function percentageCalc(){
-  const v = parseFloat(document.getElementById('pctValue').value);
-  const t = parseFloat(document.getElementById('pctTotal').value);
-  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter a value'; return; }
-  if(isNaN(t) || t===0){
-    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
-    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
-    // But we can also compute percent-of as value is considered percentage? Keep simple:
-    return;
+  try{
+    const P = sanitizeAndEval(document.getElementById('loanP').value);
+    const annual = sanitizeAndEval(document.getElementById('loanR').value);
+    const years = sanitizeAndEval(document.getElementById('loanT').value);
+    const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
+    e.innerText=''; o.innerText='Result: -';
+    if([P,annual,years].some(v=>isNaN(v))){ e.innerText='Fill all fields with valid expressions'; return; }
+    const r = annual/100/12; const n = years*12;
+    if(r===0){ o.innerText = 'Monthly EMI: ' + (P/n).toFixed(4); return; }
+    const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    o.innerText = 'Monthly EMI: '+ M.toFixed(4);
+  }catch(err){
+    document.getElementById('loanError').innerText = err.message || 'Invalid expression';
   }
-  const percent = (v/t)*100;
-  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
 }
-
-/* ========== BMI ========== */
+function calcPercentage(){
+  const mode = document.getElementById('percentMode').value;
+  const aStr = document.getElementById('p1').value;
+  const bStr = document.getElementById('p2').value;
+  const resEl = document.getElementById('pResult');
+  const errEl = document.getElementById('pError');
+  resEl.innerText='Result: -'; errEl.innerText='';
+  try{
+    const a = sanitizeAndEval(aStr);
+    const b = sanitizeAndEval(bStr);
+    if(isNaN(a) || isNaN(b)){ errEl.innerText='Please enter valid expressions'; return; }
+    let res='';
+    if(mode==='of') res = `${a}% of ${b} = ${(a/100)*b}`;
+    if(mode==='what') res = `${a} is ${(a/b*100).toFixed(4)}% of ${b}`;
+    if(mode==='change') res = `Change from ${a} to ${b} = ${(((b-a)/a)*100).toFixed(4)}%`;
+    resEl.innerText = res;
+  }catch(err){
+    errEl.innerText = err.message || 'Invalid expression';
+  }
+}
 function bmiCalculate(){
-  const w=parseFloat(document.getElementById('bmiW').value);
-  const h=parseFloat(document.getElementById('bmiH').value)/100;
-  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
-  const bmi = w/(h*h);
-  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
-  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
-}
-
-/* ========== UNIT CONVERTER ========== */
-function unitConvert(){
-  const v=parseFloat(document.getElementById('unitV').value);
-  const op=document.getElementById('unitOp').value;
-  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter value'; return; }
-  let res;
-  switch(op){
-    case 'm-km': res = (v/1000) + ' km'; break;
-    case 'km-m': res = (v*1000) + ' m'; break;
-    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
-    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
-    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
-    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
-    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
-    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
-    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
-    case 'l-ml': res = (v*1000)+' mL'; break;
-    case 'ml-l': res = (v/1000)+' L'; break;
-    default: res = 'Unsupported op'; break;
+  try{
+    const w = sanitizeAndEval(document.getElementById('bmiW').value);
+    const hcm = sanitizeAndEval(document.getElementById('bmiH').value);
+    const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
+    e.innerText=''; o.innerText='Result: -';
+    if(isNaN(w) || isNaN(hcm) || hcm===0){ e.innerText='Enter valid weight & height expressions'; return; }
+    const h = hcm/100;
+    const bmi = w/(h*h);
+    let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+    o.innerText = `BMI: ${bmi.toFixed(4)} (${cat})`;
+  }catch(err){
+    document.getElementById('bmiError').innerText = err.message || 'Invalid expression';
   }
-  o.innerText = 'Result: '+res;
 }
-
-/* ========== STATISTICS ========== */
+function unitConvert(){
+  try{
+    const v = sanitizeAndEval(document.getElementById('unitV').value);
+    const op = document.getElementById('unitOp').value;
+    const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
+    e.innerText=''; o.innerText='Result: -';
+    if(isNaN(v)){ e.innerText='Enter valid expression'; return; }
+    let res;
+    switch(op){
+      case 'm-km': res = (v/1000) + ' km'; break;
+      case 'km-m': res = (v*1000) + ' m'; break;
+      case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
+      case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
+      case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
+      case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
+      case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
+      case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
+      case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
+      case 'l-ml': res = (v*1000)+' mL'; break;
+      case 'ml-l': res = (v/1000)+' L'; break;
+      default: res = 'Unsupported op'; break;
+    }
+    o.innerText = 'Result: '+res;
+  }catch(err){
+    document.getElementById('unitError').innerText = err.message || 'Invalid expression';
+  }
+}
 function statsCalculate(){
   const raw = document.getElementById('statsIn').value;
   const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
   e.innerText=''; o.innerText='Result: -';
-  const arr = parseNumberList(raw);
-  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
+  const arr = parseListExpressionsAsNumbers(raw);
+  if(arr.length===0){ e.innerText='Enter numbers separated by comma (expressions allowed)'; return; }
   const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
   const sorted = arr.slice().sort((a,b)=>a-b);
   const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
@@ -564,93 +696,72 @@ function statsCalculate(){
   const range = sorted[sorted.length-1] - sorted[0];
   o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
 }
-
-/* ========== GCD & LCM ========== */
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
-function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
 function calcGcdLcm(){
   const raw = document.getElementById('gNums').value;
-  const arr = parseNumberList(raw).map(Math.trunc);
   const e=document.getElementById('gError'), o=document.getElementById('gResult');
   e.innerText=''; o.innerText='Result: -';
-  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
-  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
-  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
-  o.innerText = `GCD: ${g}, LCM: ${L}`;
+  try{
+    const arr = (raw||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>sanitizeAndEval(s)).map(n=>Math.trunc(n)).filter(n=>!isNaN(n));
+    if(arr.length===0){ e.innerText='Enter integer expressions separated by comma'; return; }
+    let g = Math.abs(arr[0]); let L = Math.abs(arr[0]);
+    for(let i=1;i<arr.length;i++){ g = gcd(g, arr[i]); L = lcm(L, arr[i]); }
+    o.innerText = `GCD: ${g}, LCM: ${L}`;
+  }catch(err){ e.innerText = err.message || 'Invalid expression in list'; }
 }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
 
-/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
 function parseMatrix(arr){
-  // returns {n:2 or 3, mat:[[...]]} or null
   const len=arr.length;
-  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
-  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
+  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]}; }
+  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]}; }
   return null;
 }
 function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
-function det3(m){
-  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
-       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
-       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
-}
-function inverse2(m){
-  const d = det2(m); if(d===0) return null;
-  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
-  return inv;
-}
-function transpose(m){
-  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
-  return res;
-}
-function multiply(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
-  return res;
-}
-function addMatrix(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
-  return res;
-}
+function det3(m){ return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1]) - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0]) + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]); }
+function inverse2(m){ const d = det2(m); if(d===0) return null; return [[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]]; }
+function transpose(m){ const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j]; return res; }
+function multiply(A,B){ const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j]; return res; }
+function addMatrix(A,B){ const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j]; return res; }
+
 function matrixCalc(){
-  const Araw = parseNumberList(document.getElementById('mA').value);
-  const Brow = parseNumberList(document.getElementById('mB').value);
+  const Araw = (document.getElementById('mA').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
+  const Brow = (document.getElementById('mB').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
   const op = document.getElementById('mOp').value;
   const e=document.getElementById('mError'), o=document.getElementById('mResult');
   e.innerText=''; o.innerText='Result: -';
-  const MA = parseMatrix(Araw);
-  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
-  if(op==='det'){
-    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
-    o.innerText = 'Determinant: ' + d;
-    return;
+  try{
+    const Avals = Araw.map(s=>sanitizeAndEval(s));
+    const MA = parseMatrix(Avals);
+    if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) expressions'; return; }
+    if(op==='det'){ const d = MA.n===2? det2(MA.mat) : det3(MA.mat); o.innerText = 'Determinant: ' + d; return; }
+    if(op==='inv'){
+      if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
+      const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+      const m=MA.mat;
+      const cof = [
+        [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
+        [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
+        [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
+      ];
+      const adj = transpose(cof);
+      const inv = adj.map(row => row.map(v=>v/d));
+      o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+      return;
+    }
+    if(op==='trans'){ const t = transpose(MA.mat); o.innerText = 'Transpose: ' + JSON.stringify(t); return; }
+    const Bvals = Brow.map(s=>sanitizeAndEval(s));
+    const MB = parseMatrix(Bvals);
+    if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
+    if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
+    if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
+    if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
+  }catch(err){
+    e.innerText = err.message || 'Invalid expression in matrix';
   }
-  if(op==='inv'){
-    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
-    // 3x3 inverse (use adjugate / det)
-    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
-    // compute cofactor matrix then transpose and divide by det
-    const m=MA.mat;
-    const cof = [
-      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
-      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
-      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
-    ];
-    const adj = transpose(cof);
-    const inv = adj.map(row => row.map(v=>v/d));
-    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
-    return;
-  }
-  // operations requiring B:
-  const MB = parseMatrix(Brow);
-  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
-  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
-  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
-  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
 }
 
-/* ========== AGE ========== */
+/* ---------------- AGE ---------------- */
 function ageCalc(){
   const b=document.getElementById('birth').value;
   const ref=document.getElementById('refdate').value;
@@ -669,7 +780,7 @@ function ageCalc(){
   o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
 }
 
-/* ========== UTILITY: RESET PANEL ========== */
+/* ---------------- RESET PANEL ---------------- */
 function resetPanel(id){
   const panel = document.getElementById(id);
   panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
@@ -678,19 +789,18 @@ function resetPanel(id){
   panel.querySelectorAll('.error').forEach(er=> er.innerText='');
 }
 
-/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
+/* ---------------- KEYBOARD: Enter to calculate ---------------- */
 document.addEventListener('keydown', function(e){
   if(e.key==='Enter'){
     const active = document.querySelector('.panel.active');
     if(!active) return;
     const id = active.id;
-    // map Enter to calculation function per panel:
-    if(id==='basic') basicCalculate();
+    if(id==='basic') basicEval();
     if(id==='scientific') scientificCalculate();
     if(id==='programmer') programmerCalc();
     if(id==='finance') financeCalc();
     if(id==='loan') loanCalculate();
-    if(id==='percentage') percentageCalc();
+    if(id==='percentage') calcPercentage();
     if(id==='bmi') bmiCalculate();
     if(id==='unit') unitConvert();
     if(id==='statistics') statsCalculate();
@@ -700,2125 +810,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 
-/* ========== INITIAL RENDER ========= */
-renderBasicHistory();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Smart Multi Calculator — Full</title>
-  <style>
-    :root{
-      --bg:#f5f7fb; --text:#111; --card:#fff;
-      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
-      --error:#d9534f;
-    }
-    [data-theme="dark"]{
-      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
-      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
-    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
-    header h1{font-size:1.05rem;margin:0}
-    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
-    main{max-width:980px;margin:18px auto;padding:0 16px}
-    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
-    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
-    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
-    .panel.active{display:block}
-    h2{margin:0 0 10px 0;color:var(--accent-2)}
-    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
-    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
-    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
-    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
-    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
-    .row{display:flex;gap:10px}
-    .col{flex:1}
-    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
-    .small{font-size:0.85rem;color:var(--muted)}
-    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
-    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
-    @media (max-width:420px){.row{flex-direction:column}}
-  </style>
-</head>
-<body data-theme="light">
-  <header>
-    <h1>Smart Multi Calculator (Full)</h1>
-    <div>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- MAIN MENU -->
-    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
-      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
-        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
-        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
-        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
-        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
-        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
-        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
-        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
-        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
-        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
-        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
-        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
-        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
-      </div>
-    </section>
-
-    <!-- PANELS -->
-    <!-- Basic -->
-    <section id="basic" class="panel" aria-hidden="true">
-      <h2>Basic Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
-        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
-      </div>
-      <label for="b_op">Operation</label>
-      <select id="b_op" aria-label="operation">
-        <option value="add">+</option>
-        <option value="sub">−</option>
-        <option value="mul">×</option>
-        <option value="div">÷</option>
-      </select>
-
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="basicCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="basicClear()">Clear</button>
-        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
-        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
-        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
-      </div>
-
-      <div id="basicError" class="error" role="status" aria-live="polite"></div>
-      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
-
-      <div class="small" style="margin-top:8px">History (last 20):</div>
-      <div id="basicHistory" class="history-box" aria-live="polite"></div>
-
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Scientific -->
-    <section id="scientific" class="panel" aria-hidden="true">
-      <h2>Scientific Calculator</h2>
-      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
-      <label>Angle mode</label>
-      <select id="s_mode" aria-label="angle mode">
-        <option value="deg">Degrees</option>
-        <option value="rad">Radians</option>
-      </select>
-      <label for="s_expr">Expression</label>
-      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
-      </div>
-      <div id="sError" class="error"></div>
-      <div id="sResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Programmer -->
-    <section id="programmer" class="panel" aria-hidden="true">
-      <h2>Programmer Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
-        <div class="col">
-          <label for="progBase">Bitwise / convert</label>
-          <select id="progOp" aria-label="programmer op">
-            <option value="toBin">To Binary</option>
-            <option value="toHex">To Hex</option>
-            <option value="toOct">To Octal</option>
-            <option value="and">AND (with)</option>
-            <option value="or">OR (with)</option>
-            <option value="xor">XOR (with)</option>
-            <option value="shl">Shift Left (bits)</option>
-            <option value="shr">Shift Right (bits)</option>
-          </select>
-        </div>
-      </div>
-      <label for="progSecond">Second operand (for bitwise/shift)</label>
-      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="programmerCalc()">Run</button>
-        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
-      </div>
-      <div id="progError" class="error"></div>
-      <div id="progResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Finance -->
-    <section id="finance" class="panel" aria-hidden="true">
-      <h2>Financial Calculator</h2>
-      <label for="finType">Type</label>
-      <select id="finType" aria-label="finance type">
-        <option value="simple">Simple Interest</option>
-        <option value="compound">Compound Interest</option>
-      </select>
-      <label>Principal</label><input id="finP" type="number" aria-label="principal">
-      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
-      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="financeCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
-      </div>
-      <div id="finError" class="error"></div>
-      <div id="finResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Loan -->
-    <section id="loan" class="panel" aria-hidden="true">
-      <h2>Loan EMI Calculator</h2>
-      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
-      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
-      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="loanCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
-      </div>
-      <div id="loanError" class="error"></div>
-      <div id="loanResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Percentage -->
-    <section id="percentage" class="panel" aria-hidden="true">
-      <h2>Percentage Calculator</h2>
-      <label>Value</label><input id="pctValue" type="number" aria-label="value">
-      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="percentageCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
-      </div>
-      <div id="pctError" class="error"></div>
-      <div id="pctResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- BMI -->
-    <section id="bmi" class="panel" aria-hidden="true">
-      <h2>BMI Calculator</h2>
-      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
-      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
-      </div>
-      <div id="bmiError" class="error"></div>
-      <div id="bmiResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Unit Converter -->
-    <section id="unit" class="panel" aria-hidden="true">
-      <h2>Unit Converter</h2>
-      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
-      <label>Conversion</label>
-      <select id="unitOp" aria-label="unit op">
-        <optgroup label="Length">
-          <option value="m-km">m → km</option>
-          <option value="km-m">km → m</option>
-          <option value="m-mi">m → miles</option>
-          <option value="mi-m">miles → m</option>
-        </optgroup>
-        <optgroup label="Weight">
-          <option value="kg-lb">kg → lb</option>
-          <option value="lb-kg">lb → kg</option>
-        </optgroup>
-        <optgroup label="Temperature">
-          <option value="c-f">°C → °F</option>
-          <option value="f-c">°F → °C</option>
-          <option value="c-k">°C → K</option>
-        </optgroup>
-        <optgroup label="Volume">
-          <option value="l-ml">L → mL</option>
-          <option value="ml-l">mL → L</option>
-        </optgroup>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="unitConvert()">Convert</button>
-        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
-      </div>
-      <div id="unitError" class="error"></div>
-      <div id="unitResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Statistics -->
-    <section id="statistics" class="panel" aria-hidden="true">
-      <h2>Statistics</h2>
-      <label>Numbers (comma separated)</label>
-      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="statsCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
-      </div>
-      <div id="statsError" class="error"></div>
-      <div id="statsResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- GCD / LCM -->
-    <section id="gcdlcm" class="panel" aria-hidden="true">
-      <h2>GCD & LCM</h2>
-      <label>Numbers (comma separated, integers)</label>
-      <input id="gNums" aria-label="gcd numbers">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
-      </div>
-      <div id="gError" class="error"></div>
-      <div id="gResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Matrix (2x2 & 3x3) -->
-    <section id="matrix" class="panel" aria-hidden="true">
-      <h2>Matrix (2x2 / 3x3)</h2>
-      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
-      <label>Matrix A (comma separated)</label>
-      <input id="mA" aria-label="matrix A">
-      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
-      <input id="mB" aria-label="matrix B">
-      <label>Operation</label>
-      <select id="mOp" aria-label="matrix op">
-        <option value="det">Determinant (A)</option>
-        <option value="inv">Inverse (A)</option>
-        <option value="add">A + B</option>
-        <option value="mul">A × B</option>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="matrixCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
-      </div>
-      <div id="mError" class="error"></div>
-      <div id="mResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Age -->
-    <section id="age" class="panel" aria-hidden="true">
-      <h2>Age Calculator</h2>
-      <label>Birthdate</label>
-      <input id="birth" type="date" aria-label="birthdate">
-      <label>Reference date (optional — leave blank = today)</label>
-      <input id="refdate" type="date" aria-label="reference date">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
-        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
-      </div>
-      <div id="ageError" class="error"></div>
-      <div id="ageResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <footer>© Smart Multi Calculator — offline build</footer>
-  </main>
-
-<script>
-/* ========== THEME ========== */
-function toggleTheme(){
-  const body=document.body;
-  const btn=document.getElementById('themeBtn');
-  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
-  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
-}
-
-/* ========== NAV ========== */
-function openPanel(id){
-  document.getElementById('menuGrid').style.display='none';
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel=document.getElementById(id);
-  panel.classList.add('active');
-  panel.style.display='block';
-  panel.setAttribute('aria-hidden','false');
-  // fix: ensure text color on menu cards (handled by CSS variables)
-}
-function goHome(){
-  document.getElementById('menuGrid').style.display='grid';
-  document.querySelectorAll('.panel').forEach(p=>{
-    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
-  });
-}
-
-/* ========== UTILS ========== */
-function parseNumberList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
-}
-function isInt(n){ return Number.isInteger(n); }
-
-/* ========== BASIC (history + memory) ========== */
-let basicMemory = null;
-let basicHistory = [];
-function basicCalculate(){
-  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
-  const op=document.getElementById('b_op').value;
-  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
-  error.innerText=''; out.innerText='Result: -';
-  const x=parseFloat(a), y=parseFloat(b);
-  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
-  let r;
-  if(op==='add') r=x+y;
-  if(op==='sub') r=x-y;
-  if(op==='mul') r=x*y;
-  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
-  out.innerText='Result: '+r;
-  basicHistory.push(`${x} ${op} ${y} = ${r}`);
-  if(basicHistory.length>20) basicHistory.shift();
-  renderBasicHistory();
-}
-function renderBasicHistory(){
-  const box=document.getElementById('basicHistory');
-  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
-}
-function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
-function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
-function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
-function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
-
-/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
-function scientificCalculate(){
-  const expr=document.getElementById('s_expr').value;
-  const mode=document.getElementById('s_mode').value;
-  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
-  err.innerText=''; resEl.innerText='Result: -';
-  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
-  try{
-    // Map functions to Math.* and handle ^ as **
-    let e=expr.replace(/√/g,'sqrt');
-    e=e.replace(/\^/g,'**');
-    // safe replacements (case-insensitive)
-    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
-      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
-      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
-      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
-      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
-      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
-      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
-      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
-      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
-      .replace(/(?<![\w.])e\b/gi,'Math.E');
-    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
-    if(mode==='deg'){
-      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
-      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
-      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
-    }
-    // allow Math.log10 helper
-    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
-    // Evaluate (note: works offline; user input only)
-    const value = eval(e);
-    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
-    else resEl.innerText = 'Result: ' + value;
-  }catch(errCatch){
-    err.innerText = 'Invalid expression';
-  }
-}
-
-/* ========== PROGRAMMER (base & bitwise) ========== */
-function programmerCalc(){
-  const n = parseInt(document.getElementById('progInput').value);
-  const op = document.getElementById('progOp').value;
-  const sec = parseInt(document.getElementById('progSecond').value);
-  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
-  err.innerText=''; out.innerText='Result: -';
-  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
-  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
-  try{
-    let r;
-    if(op==='toBin') r = n.toString(2);
-    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
-    if(op==='toOct') r = n.toString(8);
-    if(op==='and') r = (n & sec);
-    if(op==='or') r = (n | sec);
-    if(op==='xor') r = (n ^ sec);
-    if(op==='shl') r = (n << sec);
-    if(op==='shr') r = (n >> sec);
-    out.innerText = 'Result: '+ r;
-  }catch(e){ err.innerText='Error computing'; }
-}
-
-/* ========== FINANCE ========== */
-function financeCalc(){
-  const type=document.getElementById('finType').value;
-  const P=parseFloat(document.getElementById('finP').value);
-  const R=parseFloat(document.getElementById('finR').value)/100;
-  const T=parseFloat(document.getElementById('finT').value);
-  const e=document.getElementById('finError'), o=document.getElementById('finResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
-  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
-  o.innerText='Result: '+ amount.toFixed(2);
-}
-
-/* ========== LOAN ========== */
-function loanCalculate(){
-  const P=parseFloat(document.getElementById('loanP').value);
-  const annual=parseFloat(document.getElementById('loanR').value);
-  const years=parseFloat(document.getElementById('loanT').value);
-  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
-  const r = annual/100/12; const n = years*12;
-  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
-}
-
-/* ========== PERCENTAGE ========== */
-function percentageCalc(){
-  const v = parseFloat(document.getElementById('pctValue').value);
-  const t = parseFloat(document.getElementById('pctTotal').value);
-  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter a value'; return; }
-  if(isNaN(t) || t===0){
-    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
-    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
-    // But we can also compute percent-of as value is considered percentage? Keep simple:
-    return;
-  }
-  const percent = (v/t)*100;
-  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
-}
-
-/* ========== BMI ========== */
-function bmiCalculate(){
-  const w=parseFloat(document.getElementById('bmiW').value);
-  const h=parseFloat(document.getElementById('bmiH').value)/100;
-  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
-  const bmi = w/(h*h);
-  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
-  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
-}
-
-/* ========== UNIT CONVERTER ========== */
-function unitConvert(){
-  const v=parseFloat(document.getElementById('unitV').value);
-  const op=document.getElementById('unitOp').value;
-  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter value'; return; }
-  let res;
-  switch(op){
-    case 'm-km': res = (v/1000) + ' km'; break;
-    case 'km-m': res = (v*1000) + ' m'; break;
-    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
-    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
-    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
-    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
-    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
-    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
-    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
-    case 'l-ml': res = (v*1000)+' mL'; break;
-    case 'ml-l': res = (v/1000)+' L'; break;
-    default: res = 'Unsupported op'; break;
-  }
-  o.innerText = 'Result: '+res;
-}
-
-/* ========== STATISTICS ========== */
-function statsCalculate(){
-  const raw = document.getElementById('statsIn').value;
-  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
-  e.innerText=''; o.innerText='Result: -';
-  const arr = parseNumberList(raw);
-  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
-  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
-  const sorted = arr.slice().sort((a,b)=>a-b);
-  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
-  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
-  const maxF = Math.max(...Object.values(freq));
-  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
-  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
-  const sd = Math.sqrt(variance);
-  const range = sorted[sorted.length-1] - sorted[0];
-  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
-}
-
-/* ========== GCD & LCM ========== */
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
-function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
-function calcGcdLcm(){
-  const raw = document.getElementById('gNums').value;
-  const arr = parseNumberList(raw).map(Math.trunc);
-  const e=document.getElementById('gError'), o=document.getElementById('gResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
-  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
-  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
-  o.innerText = `GCD: ${g}, LCM: ${L}`;
-}
-
-/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
-function parseMatrix(arr){
-  // returns {n:2 or 3, mat:[[...]]} or null
-  const len=arr.length;
-  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
-  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
-  return null;
-}
-function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
-function det3(m){
-  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
-       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
-       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
-}
-function inverse2(m){
-  const d = det2(m); if(d===0) return null;
-  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
-  return inv;
-}
-function transpose(m){
-  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
-  return res;
-}
-function multiply(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
-  return res;
-}
-function addMatrix(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
-  return res;
-}
-function matrixCalc(){
-  const Araw = parseNumberList(document.getElementById('mA').value);
-  const Brow = parseNumberList(document.getElementById('mB').value);
-  const op = document.getElementById('mOp').value;
-  const e=document.getElementById('mError'), o=document.getElementById('mResult');
-  e.innerText=''; o.innerText='Result: -';
-  const MA = parseMatrix(Araw);
-  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
-  if(op==='det'){
-    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
-    o.innerText = 'Determinant: ' + d;
-    return;
-  }
-  if(op==='inv'){
-    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
-    // 3x3 inverse (use adjugate / det)
-    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
-    // compute cofactor matrix then transpose and divide by det
-    const m=MA.mat;
-    const cof = [
-      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
-      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
-      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
-    ];
-    const adj = transpose(cof);
-    const inv = adj.map(row => row.map(v=>v/d));
-    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
-    return;
-  }
-  // operations requiring B:
-  const MB = parseMatrix(Brow);
-  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
-  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
-  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
-  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
-}
-
-/* ========== AGE ========== */
-function ageCalc(){
-  const b=document.getElementById('birth').value;
-  const ref=document.getElementById('refdate').value;
-  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(!b){ e.innerText='Select birthdate'; return; }
-  const birth = new Date(b);
-  const now = ref ? new Date(ref) : new Date();
-  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
-  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
-  let y = now.getFullYear() - birth.getFullYear();
-  let m = now.getMonth() - birth.getMonth();
-  let d = now.getDate() - birth.getDate();
-  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
-  if(m<0){ y-=1; m+=12; }
-  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
-}
-
-/* ========== UTILITY: RESET PANEL ========== */
-function resetPanel(id){
-  const panel = document.getElementById(id);
-  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
-  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
-  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
-  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
-}
-
-/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
-document.addEventListener('keydown', function(e){
-  if(e.key==='Enter'){
-    const active = document.querySelector('.panel.active');
-    if(!active) return;
-    const id = active.id;
-    // map Enter to calculation function per panel:
-    if(id==='basic') basicCalculate();
-    if(id==='scientific') scientificCalculate();
-    if(id==='programmer') programmerCalc();
-    if(id==='finance') financeCalc();
-    if(id==='loan') loanCalculate();
-    if(id==='percentage') percentageCalc();
-    if(id==='bmi') bmiCalculate();
-    if(id==='unit') unitConvert();
-    if(id==='statistics') statsCalculate();
-    if(id==='gcdlcm') calcGcdLcm();
-    if(id==='matrix') matrixCalc();
-    if(id==='age') ageCalc();
-  }
-});
-
-/* ========== INITIAL RENDER ========= */
-renderBasicHistory();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Smart Multi Calculator — Full</title>
-  <style>
-    :root{
-      --bg:#f5f7fb; --text:#111; --card:#fff;
-      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
-      --error:#d9534f;
-    }
-    [data-theme="dark"]{
-      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
-      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
-    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
-    header h1{font-size:1.05rem;margin:0}
-    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
-    main{max-width:980px;margin:18px auto;padding:0 16px}
-    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
-    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
-    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
-    .panel.active{display:block}
-    h2{margin:0 0 10px 0;color:var(--accent-2)}
-    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
-    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
-    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
-    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
-    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
-    .row{display:flex;gap:10px}
-    .col{flex:1}
-    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
-    .small{font-size:0.85rem;color:var(--muted)}
-    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
-    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
-    @media (max-width:420px){.row{flex-direction:column}}
-  </style>
-</head>
-<body data-theme="light">
-  <header>
-    <h1>Smart Multi Calculator (Full)</h1>
-    <div>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- MAIN MENU -->
-    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
-      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
-        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
-        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
-        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
-        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
-        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
-        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
-        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
-        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
-        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
-        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
-        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
-        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
-      </div>
-    </section>
-
-    <!-- PANELS -->
-    <!-- Basic -->
-    <section id="basic" class="panel" aria-hidden="true">
-      <h2>Basic Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
-        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
-      </div>
-      <label for="b_op">Operation</label>
-      <select id="b_op" aria-label="operation">
-        <option value="add">+</option>
-        <option value="sub">−</option>
-        <option value="mul">×</option>
-        <option value="div">÷</option>
-      </select>
-
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="basicCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="basicClear()">Clear</button>
-        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
-        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
-        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
-      </div>
-
-      <div id="basicError" class="error" role="status" aria-live="polite"></div>
-      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
-
-      <div class="small" style="margin-top:8px">History (last 20):</div>
-      <div id="basicHistory" class="history-box" aria-live="polite"></div>
-
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Scientific -->
-    <section id="scientific" class="panel" aria-hidden="true">
-      <h2>Scientific Calculator</h2>
-      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
-      <label>Angle mode</label>
-      <select id="s_mode" aria-label="angle mode">
-        <option value="deg">Degrees</option>
-        <option value="rad">Radians</option>
-      </select>
-      <label for="s_expr">Expression</label>
-      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
-      </div>
-      <div id="sError" class="error"></div>
-      <div id="sResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Programmer -->
-    <section id="programmer" class="panel" aria-hidden="true">
-      <h2>Programmer Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
-        <div class="col">
-          <label for="progBase">Bitwise / convert</label>
-          <select id="progOp" aria-label="programmer op">
-            <option value="toBin">To Binary</option>
-            <option value="toHex">To Hex</option>
-            <option value="toOct">To Octal</option>
-            <option value="and">AND (with)</option>
-            <option value="or">OR (with)</option>
-            <option value="xor">XOR (with)</option>
-            <option value="shl">Shift Left (bits)</option>
-            <option value="shr">Shift Right (bits)</option>
-          </select>
-        </div>
-      </div>
-      <label for="progSecond">Second operand (for bitwise/shift)</label>
-      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="programmerCalc()">Run</button>
-        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
-      </div>
-      <div id="progError" class="error"></div>
-      <div id="progResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Finance -->
-    <section id="finance" class="panel" aria-hidden="true">
-      <h2>Financial Calculator</h2>
-      <label for="finType">Type</label>
-      <select id="finType" aria-label="finance type">
-        <option value="simple">Simple Interest</option>
-        <option value="compound">Compound Interest</option>
-      </select>
-      <label>Principal</label><input id="finP" type="number" aria-label="principal">
-      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
-      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="financeCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
-      </div>
-      <div id="finError" class="error"></div>
-      <div id="finResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Loan -->
-    <section id="loan" class="panel" aria-hidden="true">
-      <h2>Loan EMI Calculator</h2>
-      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
-      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
-      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="loanCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
-      </div>
-      <div id="loanError" class="error"></div>
-      <div id="loanResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Percentage -->
-    <section id="percentage" class="panel" aria-hidden="true">
-      <h2>Percentage Calculator</h2>
-      <label>Value</label><input id="pctValue" type="number" aria-label="value">
-      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="percentageCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
-      </div>
-      <div id="pctError" class="error"></div>
-      <div id="pctResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- BMI -->
-    <section id="bmi" class="panel" aria-hidden="true">
-      <h2>BMI Calculator</h2>
-      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
-      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
-      </div>
-      <div id="bmiError" class="error"></div>
-      <div id="bmiResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Unit Converter -->
-    <section id="unit" class="panel" aria-hidden="true">
-      <h2>Unit Converter</h2>
-      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
-      <label>Conversion</label>
-      <select id="unitOp" aria-label="unit op">
-        <optgroup label="Length">
-          <option value="m-km">m → km</option>
-          <option value="km-m">km → m</option>
-          <option value="m-mi">m → miles</option>
-          <option value="mi-m">miles → m</option>
-        </optgroup>
-        <optgroup label="Weight">
-          <option value="kg-lb">kg → lb</option>
-          <option value="lb-kg">lb → kg</option>
-        </optgroup>
-        <optgroup label="Temperature">
-          <option value="c-f">°C → °F</option>
-          <option value="f-c">°F → °C</option>
-          <option value="c-k">°C → K</option>
-        </optgroup>
-        <optgroup label="Volume">
-          <option value="l-ml">L → mL</option>
-          <option value="ml-l">mL → L</option>
-        </optgroup>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="unitConvert()">Convert</button>
-        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
-      </div>
-      <div id="unitError" class="error"></div>
-      <div id="unitResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Statistics -->
-    <section id="statistics" class="panel" aria-hidden="true">
-      <h2>Statistics</h2>
-      <label>Numbers (comma separated)</label>
-      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="statsCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
-      </div>
-      <div id="statsError" class="error"></div>
-      <div id="statsResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- GCD / LCM -->
-    <section id="gcdlcm" class="panel" aria-hidden="true">
-      <h2>GCD & LCM</h2>
-      <label>Numbers (comma separated, integers)</label>
-      <input id="gNums" aria-label="gcd numbers">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
-      </div>
-      <div id="gError" class="error"></div>
-      <div id="gResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Matrix (2x2 & 3x3) -->
-    <section id="matrix" class="panel" aria-hidden="true">
-      <h2>Matrix (2x2 / 3x3)</h2>
-      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
-      <label>Matrix A (comma separated)</label>
-      <input id="mA" aria-label="matrix A">
-      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
-      <input id="mB" aria-label="matrix B">
-      <label>Operation</label>
-      <select id="mOp" aria-label="matrix op">
-        <option value="det">Determinant (A)</option>
-        <option value="inv">Inverse (A)</option>
-        <option value="add">A + B</option>
-        <option value="mul">A × B</option>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="matrixCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
-      </div>
-      <div id="mError" class="error"></div>
-      <div id="mResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Age -->
-    <section id="age" class="panel" aria-hidden="true">
-      <h2>Age Calculator</h2>
-      <label>Birthdate</label>
-      <input id="birth" type="date" aria-label="birthdate">
-      <label>Reference date (optional — leave blank = today)</label>
-      <input id="refdate" type="date" aria-label="reference date">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
-        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
-      </div>
-      <div id="ageError" class="error"></div>
-      <div id="ageResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <footer>© Smart Multi Calculator — offline build</footer>
-  </main>
-
-<script>
-/* ========== THEME ========== */
-function toggleTheme(){
-  const body=document.body;
-  const btn=document.getElementById('themeBtn');
-  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
-  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
-}
-
-/* ========== NAV ========== */
-function openPanel(id){
-  document.getElementById('menuGrid').style.display='none';
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel=document.getElementById(id);
-  panel.classList.add('active');
-  panel.style.display='block';
-  panel.setAttribute('aria-hidden','false');
-  // fix: ensure text color on menu cards (handled by CSS variables)
-}
-function goHome(){
-  document.getElementById('menuGrid').style.display='grid';
-  document.querySelectorAll('.panel').forEach(p=>{
-    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
-  });
-}
-
-/* ========== UTILS ========== */
-function parseNumberList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
-}
-function isInt(n){ return Number.isInteger(n); }
-
-/* ========== BASIC (history + memory) ========== */
-let basicMemory = null;
-let basicHistory = [];
-function basicCalculate(){
-  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
-  const op=document.getElementById('b_op').value;
-  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
-  error.innerText=''; out.innerText='Result: -';
-  const x=parseFloat(a), y=parseFloat(b);
-  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
-  let r;
-  if(op==='add') r=x+y;
-  if(op==='sub') r=x-y;
-  if(op==='mul') r=x*y;
-  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
-  out.innerText='Result: '+r;
-  basicHistory.push(`${x} ${op} ${y} = ${r}`);
-  if(basicHistory.length>20) basicHistory.shift();
-  renderBasicHistory();
-}
-function renderBasicHistory(){
-  const box=document.getElementById('basicHistory');
-  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
-}
-function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
-function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
-function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
-function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
-
-/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
-function scientificCalculate(){
-  const expr=document.getElementById('s_expr').value;
-  const mode=document.getElementById('s_mode').value;
-  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
-  err.innerText=''; resEl.innerText='Result: -';
-  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
-  try{
-    // Map functions to Math.* and handle ^ as **
-    let e=expr.replace(/√/g,'sqrt');
-    e=e.replace(/\^/g,'**');
-    // safe replacements (case-insensitive)
-    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
-      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
-      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
-      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
-      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
-      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
-      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
-      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
-      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
-      .replace(/(?<![\w.])e\b/gi,'Math.E');
-    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
-    if(mode==='deg'){
-      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
-      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
-      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
-    }
-    // allow Math.log10 helper
-    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
-    // Evaluate (note: works offline; user input only)
-    const value = eval(e);
-    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
-    else resEl.innerText = 'Result: ' + value;
-  }catch(errCatch){
-    err.innerText = 'Invalid expression';
-  }
-}
-
-/* ========== PROGRAMMER (base & bitwise) ========== */
-function programmerCalc(){
-  const n = parseInt(document.getElementById('progInput').value);
-  const op = document.getElementById('progOp').value;
-  const sec = parseInt(document.getElementById('progSecond').value);
-  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
-  err.innerText=''; out.innerText='Result: -';
-  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
-  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
-  try{
-    let r;
-    if(op==='toBin') r = n.toString(2);
-    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
-    if(op==='toOct') r = n.toString(8);
-    if(op==='and') r = (n & sec);
-    if(op==='or') r = (n | sec);
-    if(op==='xor') r = (n ^ sec);
-    if(op==='shl') r = (n << sec);
-    if(op==='shr') r = (n >> sec);
-    out.innerText = 'Result: '+ r;
-  }catch(e){ err.innerText='Error computing'; }
-}
-
-/* ========== FINANCE ========== */
-function financeCalc(){
-  const type=document.getElementById('finType').value;
-  const P=parseFloat(document.getElementById('finP').value);
-  const R=parseFloat(document.getElementById('finR').value)/100;
-  const T=parseFloat(document.getElementById('finT').value);
-  const e=document.getElementById('finError'), o=document.getElementById('finResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
-  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
-  o.innerText='Result: '+ amount.toFixed(2);
-}
-
-/* ========== LOAN ========== */
-function loanCalculate(){
-  const P=parseFloat(document.getElementById('loanP').value);
-  const annual=parseFloat(document.getElementById('loanR').value);
-  const years=parseFloat(document.getElementById('loanT').value);
-  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
-  const r = annual/100/12; const n = years*12;
-  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
-}
-
-/* ========== PERCENTAGE ========== */
-function percentageCalc(){
-  const v = parseFloat(document.getElementById('pctValue').value);
-  const t = parseFloat(document.getElementById('pctTotal').value);
-  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter a value'; return; }
-  if(isNaN(t) || t===0){
-    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
-    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
-    // But we can also compute percent-of as value is considered percentage? Keep simple:
-    return;
-  }
-  const percent = (v/t)*100;
-  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
-}
-
-/* ========== BMI ========== */
-function bmiCalculate(){
-  const w=parseFloat(document.getElementById('bmiW').value);
-  const h=parseFloat(document.getElementById('bmiH').value)/100;
-  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
-  const bmi = w/(h*h);
-  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
-  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
-}
-
-/* ========== UNIT CONVERTER ========== */
-function unitConvert(){
-  const v=parseFloat(document.getElementById('unitV').value);
-  const op=document.getElementById('unitOp').value;
-  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter value'; return; }
-  let res;
-  switch(op){
-    case 'm-km': res = (v/1000) + ' km'; break;
-    case 'km-m': res = (v*1000) + ' m'; break;
-    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
-    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
-    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
-    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
-    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
-    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
-    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
-    case 'l-ml': res = (v*1000)+' mL'; break;
-    case 'ml-l': res = (v/1000)+' L'; break;
-    default: res = 'Unsupported op'; break;
-  }
-  o.innerText = 'Result: '+res;
-}
-
-/* ========== STATISTICS ========== */
-function statsCalculate(){
-  const raw = document.getElementById('statsIn').value;
-  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
-  e.innerText=''; o.innerText='Result: -';
-  const arr = parseNumberList(raw);
-  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
-  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
-  const sorted = arr.slice().sort((a,b)=>a-b);
-  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
-  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
-  const maxF = Math.max(...Object.values(freq));
-  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
-  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
-  const sd = Math.sqrt(variance);
-  const range = sorted[sorted.length-1] - sorted[0];
-  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
-}
-
-/* ========== GCD & LCM ========== */
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
-function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
-function calcGcdLcm(){
-  const raw = document.getElementById('gNums').value;
-  const arr = parseNumberList(raw).map(Math.trunc);
-  const e=document.getElementById('gError'), o=document.getElementById('gResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
-  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
-  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
-  o.innerText = `GCD: ${g}, LCM: ${L}`;
-}
-
-/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
-function parseMatrix(arr){
-  // returns {n:2 or 3, mat:[[...]]} or null
-  const len=arr.length;
-  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
-  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
-  return null;
-}
-function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
-function det3(m){
-  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
-       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
-       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
-}
-function inverse2(m){
-  const d = det2(m); if(d===0) return null;
-  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
-  return inv;
-}
-function transpose(m){
-  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
-  return res;
-}
-function multiply(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
-  return res;
-}
-function addMatrix(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
-  return res;
-}
-function matrixCalc(){
-  const Araw = parseNumberList(document.getElementById('mA').value);
-  const Brow = parseNumberList(document.getElementById('mB').value);
-  const op = document.getElementById('mOp').value;
-  const e=document.getElementById('mError'), o=document.getElementById('mResult');
-  e.innerText=''; o.innerText='Result: -';
-  const MA = parseMatrix(Araw);
-  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
-  if(op==='det'){
-    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
-    o.innerText = 'Determinant: ' + d;
-    return;
-  }
-  if(op==='inv'){
-    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
-    // 3x3 inverse (use adjugate / det)
-    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
-    // compute cofactor matrix then transpose and divide by det
-    const m=MA.mat;
-    const cof = [
-      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
-      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
-      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
-    ];
-    const adj = transpose(cof);
-    const inv = adj.map(row => row.map(v=>v/d));
-    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
-    return;
-  }
-  // operations requiring B:
-  const MB = parseMatrix(Brow);
-  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
-  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
-  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
-  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
-}
-
-/* ========== AGE ========== */
-function ageCalc(){
-  const b=document.getElementById('birth').value;
-  const ref=document.getElementById('refdate').value;
-  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(!b){ e.innerText='Select birthdate'; return; }
-  const birth = new Date(b);
-  const now = ref ? new Date(ref) : new Date();
-  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
-  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
-  let y = now.getFullYear() - birth.getFullYear();
-  let m = now.getMonth() - birth.getMonth();
-  let d = now.getDate() - birth.getDate();
-  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
-  if(m<0){ y-=1; m+=12; }
-  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
-}
-
-/* ========== UTILITY: RESET PANEL ========== */
-function resetPanel(id){
-  const panel = document.getElementById(id);
-  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
-  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
-  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
-  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
-}
-
-/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
-document.addEventListener('keydown', function(e){
-  if(e.key==='Enter'){
-    const active = document.querySelector('.panel.active');
-    if(!active) return;
-    const id = active.id;
-    // map Enter to calculation function per panel:
-    if(id==='basic') basicCalculate();
-    if(id==='scientific') scientificCalculate();
-    if(id==='programmer') programmerCalc();
-    if(id==='finance') financeCalc();
-    if(id==='loan') loanCalculate();
-    if(id==='percentage') percentageCalc();
-    if(id==='bmi') bmiCalculate();
-    if(id==='unit') unitConvert();
-    if(id==='statistics') statsCalculate();
-    if(id==='gcdlcm') calcGcdLcm();
-    if(id==='matrix') matrixCalc();
-    if(id==='age') ageCalc();
-  }
-});
-
-/* ========== INITIAL RENDER ========= */
-renderBasicHistory();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Smart Multi Calculator — Full</title>
-  <style>
-    :root{
-      --bg:#f5f7fb; --text:#111; --card:#fff;
-      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
-      --error:#d9534f;
-    }
-    [data-theme="dark"]{
-      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
-      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
-    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
-    header h1{font-size:1.05rem;margin:0}
-    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
-    main{max-width:980px;margin:18px auto;padding:0 16px}
-    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
-    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
-    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
-    .panel.active{display:block}
-    h2{margin:0 0 10px 0;color:var(--accent-2)}
-    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
-    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
-    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
-    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
-    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
-    .row{display:flex;gap:10px}
-    .col{flex:1}
-    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
-    .small{font-size:0.85rem;color:var(--muted)}
-    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
-    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
-    @media (max-width:420px){.row{flex-direction:column}}
-  </style>
-</head>
-<body data-theme="light">
-  <header>
-    <h1>Smart Multi Calculator (Full)</h1>
-    <div>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- MAIN MENU -->
-    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
-      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
-        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
-        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
-        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
-        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
-        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
-        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
-        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
-        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
-        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
-        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
-        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
-      </div>
-      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
-        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
-      </div>
-    </section>
-
-    <!-- PANELS -->
-    <!-- Basic -->
-    <section id="basic" class="panel" aria-hidden="true">
-      <h2>Basic Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
-        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
-      </div>
-      <label for="b_op">Operation</label>
-      <select id="b_op" aria-label="operation">
-        <option value="add">+</option>
-        <option value="sub">−</option>
-        <option value="mul">×</option>
-        <option value="div">÷</option>
-      </select>
-
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="basicCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="basicClear()">Clear</button>
-        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
-        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
-        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
-      </div>
-
-      <div id="basicError" class="error" role="status" aria-live="polite"></div>
-      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
-
-      <div class="small" style="margin-top:8px">History (last 20):</div>
-      <div id="basicHistory" class="history-box" aria-live="polite"></div>
-
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Scientific -->
-    <section id="scientific" class="panel" aria-hidden="true">
-      <h2>Scientific Calculator</h2>
-      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
-      <label>Angle mode</label>
-      <select id="s_mode" aria-label="angle mode">
-        <option value="deg">Degrees</option>
-        <option value="rad">Radians</option>
-      </select>
-      <label for="s_expr">Expression</label>
-      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
-      </div>
-      <div id="sError" class="error"></div>
-      <div id="sResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Programmer -->
-    <section id="programmer" class="panel" aria-hidden="true">
-      <h2>Programmer Calculator</h2>
-      <div class="row">
-        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
-        <div class="col">
-          <label for="progBase">Bitwise / convert</label>
-          <select id="progOp" aria-label="programmer op">
-            <option value="toBin">To Binary</option>
-            <option value="toHex">To Hex</option>
-            <option value="toOct">To Octal</option>
-            <option value="and">AND (with)</option>
-            <option value="or">OR (with)</option>
-            <option value="xor">XOR (with)</option>
-            <option value="shl">Shift Left (bits)</option>
-            <option value="shr">Shift Right (bits)</option>
-          </select>
-        </div>
-      </div>
-      <label for="progSecond">Second operand (for bitwise/shift)</label>
-      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="programmerCalc()">Run</button>
-        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
-      </div>
-      <div id="progError" class="error"></div>
-      <div id="progResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Finance -->
-    <section id="finance" class="panel" aria-hidden="true">
-      <h2>Financial Calculator</h2>
-      <label for="finType">Type</label>
-      <select id="finType" aria-label="finance type">
-        <option value="simple">Simple Interest</option>
-        <option value="compound">Compound Interest</option>
-      </select>
-      <label>Principal</label><input id="finP" type="number" aria-label="principal">
-      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
-      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="financeCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
-      </div>
-      <div id="finError" class="error"></div>
-      <div id="finResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Loan -->
-    <section id="loan" class="panel" aria-hidden="true">
-      <h2>Loan EMI Calculator</h2>
-      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
-      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
-      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="loanCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
-      </div>
-      <div id="loanError" class="error"></div>
-      <div id="loanResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Percentage -->
-    <section id="percentage" class="panel" aria-hidden="true">
-      <h2>Percentage Calculator</h2>
-      <label>Value</label><input id="pctValue" type="number" aria-label="value">
-      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="percentageCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
-      </div>
-      <div id="pctError" class="error"></div>
-      <div id="pctResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- BMI -->
-    <section id="bmi" class="panel" aria-hidden="true">
-      <h2>BMI Calculator</h2>
-      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
-      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
-      </div>
-      <div id="bmiError" class="error"></div>
-      <div id="bmiResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Unit Converter -->
-    <section id="unit" class="panel" aria-hidden="true">
-      <h2>Unit Converter</h2>
-      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
-      <label>Conversion</label>
-      <select id="unitOp" aria-label="unit op">
-        <optgroup label="Length">
-          <option value="m-km">m → km</option>
-          <option value="km-m">km → m</option>
-          <option value="m-mi">m → miles</option>
-          <option value="mi-m">miles → m</option>
-        </optgroup>
-        <optgroup label="Weight">
-          <option value="kg-lb">kg → lb</option>
-          <option value="lb-kg">lb → kg</option>
-        </optgroup>
-        <optgroup label="Temperature">
-          <option value="c-f">°C → °F</option>
-          <option value="f-c">°F → °C</option>
-          <option value="c-k">°C → K</option>
-        </optgroup>
-        <optgroup label="Volume">
-          <option value="l-ml">L → mL</option>
-          <option value="ml-l">mL → L</option>
-        </optgroup>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="unitConvert()">Convert</button>
-        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
-      </div>
-      <div id="unitError" class="error"></div>
-      <div id="unitResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Statistics -->
-    <section id="statistics" class="panel" aria-hidden="true">
-      <h2>Statistics</h2>
-      <label>Numbers (comma separated)</label>
-      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="statsCalculate()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
-      </div>
-      <div id="statsError" class="error"></div>
-      <div id="statsResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- GCD / LCM -->
-    <section id="gcdlcm" class="panel" aria-hidden="true">
-      <h2>GCD & LCM</h2>
-      <label>Numbers (comma separated, integers)</label>
-      <input id="gNums" aria-label="gcd numbers">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
-      </div>
-      <div id="gError" class="error"></div>
-      <div id="gResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Matrix (2x2 & 3x3) -->
-    <section id="matrix" class="panel" aria-hidden="true">
-      <h2>Matrix (2x2 / 3x3)</h2>
-      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
-      <label>Matrix A (comma separated)</label>
-      <input id="mA" aria-label="matrix A">
-      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
-      <input id="mB" aria-label="matrix B">
-      <label>Operation</label>
-      <select id="mOp" aria-label="matrix op">
-        <option value="det">Determinant (A)</option>
-        <option value="inv">Inverse (A)</option>
-        <option value="add">A + B</option>
-        <option value="mul">A × B</option>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="matrixCalc()">Calculate</button>
-        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
-      </div>
-      <div id="mError" class="error"></div>
-      <div id="mResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <!-- Age -->
-    <section id="age" class="panel" aria-hidden="true">
-      <h2>Age Calculator</h2>
-      <label>Birthdate</label>
-      <input id="birth" type="date" aria-label="birthdate">
-      <label>Reference date (optional — leave blank = today)</label>
-      <input id="refdate" type="date" aria-label="reference date">
-      <div style="margin-top:8px">
-        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
-        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
-      </div>
-      <div id="ageError" class="error"></div>
-      <div id="ageResult" class="result">Result: -</div>
-      <button class="back" onclick="goHome()">← Back to Menu</button>
-    </section>
-
-    <footer>© Smart Multi Calculator — offline build</footer>
-  </main>
-
-<script>
-/* ========== THEME ========== */
-function toggleTheme(){
-  const body=document.body;
-  const btn=document.getElementById('themeBtn');
-  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
-  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
-}
-
-/* ========== NAV ========== */
-function openPanel(id){
-  document.getElementById('menuGrid').style.display='none';
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel=document.getElementById(id);
-  panel.classList.add('active');
-  panel.style.display='block';
-  panel.setAttribute('aria-hidden','false');
-  // fix: ensure text color on menu cards (handled by CSS variables)
-}
-function goHome(){
-  document.getElementById('menuGrid').style.display='grid';
-  document.querySelectorAll('.panel').forEach(p=>{
-    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
-  });
-}
-
-/* ========== UTILS ========== */
-function parseNumberList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
-}
-function isInt(n){ return Number.isInteger(n); }
-
-/* ========== BASIC (history + memory) ========== */
-let basicMemory = null;
-let basicHistory = [];
-function basicCalculate(){
-  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
-  const op=document.getElementById('b_op').value;
-  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
-  error.innerText=''; out.innerText='Result: -';
-  const x=parseFloat(a), y=parseFloat(b);
-  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
-  let r;
-  if(op==='add') r=x+y;
-  if(op==='sub') r=x-y;
-  if(op==='mul') r=x*y;
-  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
-  out.innerText='Result: '+r;
-  basicHistory.push(`${x} ${op} ${y} = ${r}`);
-  if(basicHistory.length>20) basicHistory.shift();
-  renderBasicHistory();
-}
-function renderBasicHistory(){
-  const box=document.getElementById('basicHistory');
-  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
-}
-function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
-function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
-function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
-function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
-
-/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
-function scientificCalculate(){
-  const expr=document.getElementById('s_expr').value;
-  const mode=document.getElementById('s_mode').value;
-  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
-  err.innerText=''; resEl.innerText='Result: -';
-  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
-  try{
-    // Map functions to Math.* and handle ^ as **
-    let e=expr.replace(/√/g,'sqrt');
-    e=e.replace(/\^/g,'**');
-    // safe replacements (case-insensitive)
-    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
-      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
-      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
-      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
-      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
-      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
-      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
-      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
-      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
-      .replace(/(?<![\w.])e\b/gi,'Math.E');
-    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
-    if(mode==='deg'){
-      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
-      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
-      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
-    }
-    // allow Math.log10 helper
-    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
-    // Evaluate (note: works offline; user input only)
-    const value = eval(e);
-    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
-    else resEl.innerText = 'Result: ' + value;
-  }catch(errCatch){
-    err.innerText = 'Invalid expression';
-  }
-}
-
-/* ========== PROGRAMMER (base & bitwise) ========== */
-function programmerCalc(){
-  const n = parseInt(document.getElementById('progInput').value);
-  const op = document.getElementById('progOp').value;
-  const sec = parseInt(document.getElementById('progSecond').value);
-  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
-  err.innerText=''; out.innerText='Result: -';
-  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
-  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
-  try{
-    let r;
-    if(op==='toBin') r = n.toString(2);
-    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
-    if(op==='toOct') r = n.toString(8);
-    if(op==='and') r = (n & sec);
-    if(op==='or') r = (n | sec);
-    if(op==='xor') r = (n ^ sec);
-    if(op==='shl') r = (n << sec);
-    if(op==='shr') r = (n >> sec);
-    out.innerText = 'Result: '+ r;
-  }catch(e){ err.innerText='Error computing'; }
-}
-
-/* ========== FINANCE ========== */
-function financeCalc(){
-  const type=document.getElementById('finType').value;
-  const P=parseFloat(document.getElementById('finP').value);
-  const R=parseFloat(document.getElementById('finR').value)/100;
-  const T=parseFloat(document.getElementById('finT').value);
-  const e=document.getElementById('finError'), o=document.getElementById('finResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
-  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
-  o.innerText='Result: '+ amount.toFixed(2);
-}
-
-/* ========== LOAN ========== */
-function loanCalculate(){
-  const P=parseFloat(document.getElementById('loanP').value);
-  const annual=parseFloat(document.getElementById('loanR').value);
-  const years=parseFloat(document.getElementById('loanT').value);
-  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
-  const r = annual/100/12; const n = years*12;
-  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
-}
-
-/* ========== PERCENTAGE ========== */
-function percentageCalc(){
-  const v = parseFloat(document.getElementById('pctValue').value);
-  const t = parseFloat(document.getElementById('pctTotal').value);
-  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter a value'; return; }
-  if(isNaN(t) || t===0){
-    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
-    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
-    // But we can also compute percent-of as value is considered percentage? Keep simple:
-    return;
-  }
-  const percent = (v/t)*100;
-  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
-}
-
-/* ========== BMI ========== */
-function bmiCalculate(){
-  const w=parseFloat(document.getElementById('bmiW').value);
-  const h=parseFloat(document.getElementById('bmiH').value)/100;
-  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
-  const bmi = w/(h*h);
-  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
-  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
-}
-
-/* ========== UNIT CONVERTER ========== */
-function unitConvert(){
-  const v=parseFloat(document.getElementById('unitV').value);
-  const op=document.getElementById('unitOp').value;
-  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(isNaN(v)){ e.innerText='Enter value'; return; }
-  let res;
-  switch(op){
-    case 'm-km': res = (v/1000) + ' km'; break;
-    case 'km-m': res = (v*1000) + ' m'; break;
-    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
-    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
-    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
-    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
-    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
-    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
-    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
-    case 'l-ml': res = (v*1000)+' mL'; break;
-    case 'ml-l': res = (v/1000)+' L'; break;
-    default: res = 'Unsupported op'; break;
-  }
-  o.innerText = 'Result: '+res;
-}
-
-/* ========== STATISTICS ========== */
-function statsCalculate(){
-  const raw = document.getElementById('statsIn').value;
-  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
-  e.innerText=''; o.innerText='Result: -';
-  const arr = parseNumberList(raw);
-  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
-  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
-  const sorted = arr.slice().sort((a,b)=>a-b);
-  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
-  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
-  const maxF = Math.max(...Object.values(freq));
-  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
-  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
-  const sd = Math.sqrt(variance);
-  const range = sorted[sorted.length-1] - sorted[0];
-  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
-}
-
-/* ========== GCD & LCM ========== */
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
-function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
-function calcGcdLcm(){
-  const raw = document.getElementById('gNums').value;
-  const arr = parseNumberList(raw).map(Math.trunc);
-  const e=document.getElementById('gError'), o=document.getElementById('gResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
-  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
-  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
-  o.innerText = `GCD: ${g}, LCM: ${L}`;
-}
-
-/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
-function parseMatrix(arr){
-  // returns {n:2 or 3, mat:[[...]]} or null
-  const len=arr.length;
-  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
-  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
-  return null;
-}
-function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
-function det3(m){
-  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
-       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
-       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
-}
-function inverse2(m){
-  const d = det2(m); if(d===0) return null;
-  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
-  return inv;
-}
-function transpose(m){
-  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
-  return res;
-}
-function multiply(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
-  return res;
-}
-function addMatrix(A,B){
-  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
-  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
-  return res;
-}
-function matrixCalc(){
-  const Araw = parseNumberList(document.getElementById('mA').value);
-  const Brow = parseNumberList(document.getElementById('mB').value);
-  const op = document.getElementById('mOp').value;
-  const e=document.getElementById('mError'), o=document.getElementById('mResult');
-  e.innerText=''; o.innerText='Result: -';
-  const MA = parseMatrix(Araw);
-  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
-  if(op==='det'){
-    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
-    o.innerText = 'Determinant: ' + d;
-    return;
-  }
-  if(op==='inv'){
-    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
-    // 3x3 inverse (use adjugate / det)
-    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
-    // compute cofactor matrix then transpose and divide by det
-    const m=MA.mat;
-    const cof = [
-      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
-      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
-      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
-    ];
-    const adj = transpose(cof);
-    const inv = adj.map(row => row.map(v=>v/d));
-    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
-    return;
-  }
-  // operations requiring B:
-  const MB = parseMatrix(Brow);
-  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
-  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
-  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
-  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
-}
-
-/* ========== AGE ========== */
-function ageCalc(){
-  const b=document.getElementById('birth').value;
-  const ref=document.getElementById('refdate').value;
-  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(!b){ e.innerText='Select birthdate'; return; }
-  const birth = new Date(b);
-  const now = ref ? new Date(ref) : new Date();
-  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
-  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
-  let y = now.getFullYear() - birth.getFullYear();
-  let m = now.getMonth() - birth.getMonth();
-  let d = now.getDate() - birth.getDate();
-  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
-  if(m<0){ y-=1; m+=12; }
-  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
-}
-
-/* ========== UTILITY: RESET PANEL ========== */
-function resetPanel(id){
-  const panel = document.getElementById(id);
-  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
-  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
-  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
-  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
-}
-
-/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
-document.addEventListener('keydown', function(e){
-  if(e.key==='Enter'){
-    const active = document.querySelector('.panel.active');
-    if(!active) return;
-    const id = active.id;
-    // map Enter to calculation function per panel:
-    if(id==='basic') basicCalculate();
-    if(id==='scientific') scientificCalculate();
-    if(id==='programmer') programmerCalc();
-    if(id==='finance') financeCalc();
-    if(id==='loan') loanCalculate();
-    if(id==='percentage') percentageCalc();
-    if(id==='bmi') bmiCalculate();
-    if(id==='unit') unitConvert();
-    if(id==='statistics') statsCalculate();
-    if(id==='gcdlcm') calcGcdLcm();
-    if(id==='matrix') matrixCalc();
-    if(id==='age') ageCalc();
-  }
-});
-
-/* ========== INITIAL RENDER ========= */
+/* ---------------- INITIALIZE ---------------- */
 renderBasicHistory();
 </script>
 </body>
