@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi Calculator</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --text: #111;
+      --card: #fff;
+      --brand: #0066cc;
+      --brand-dark: #004999;
+      --error: #d9534f;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1115;
+      --text: #eee;
+      --card: #1b1e24;
+      --brand: #3399ff;
+      --brand-dark: #0066cc;
+    }
+    body {
+      margin:0; font-family: Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+    header {
+      background: var(--brand);
+      color: #fff; padding: 1rem;
+      display: flex; justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin:0; font-size:1.2rem; }
+    button.toggle-theme {
+      background:none; border:none; color:#fff;
+      cursor:pointer; font-size:0.9rem;
+    }
+    main { padding:1rem; max-width:800px; margin:auto; }
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+      gap:1rem;
+    }
+    .menu button {
+      background: var(--card);
+      border:1px solid #ccc;
+      border-radius:12px;
+      padding:1rem;
+      font-size:1rem;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .menu button:hover {
+      background: var(--brand); color:#fff;
+    }
+    .card {
+      background: var(--card);
+      border-radius:12px;
+      padding:1rem; margin-top:1rem;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+    .hidden { display:none; }
+    input, select {
+      width:100%; padding:0.5rem;
+      margin:0.3rem 0 0.8rem 0;
+      border-radius:8px; border:1px solid #ccc;
+    }
+    button.action {
+      background: var(--brand); color:#fff;
+      border:none; padding:0.6rem 1rem;
+      margin-right:0.5rem;
+      border-radius:8px; cursor:pointer;
+    }
+    button.action:hover { background: var(--brand-dark); }
+    .error { color: var(--error); font-size:0.9rem; }
+    .result {
+      background: var(--bg);
+      padding:0.7rem; border-radius:8px;
+      margin-top:0.5rem; font-weight:bold;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <h1>Multi Calculator</h1>
+    <button class="toggle-theme" onclick="toggleTheme()">🌙 Dark</button>
+  </header>
+  <main>
+    <section id="menu" class="menu">
+      <button onclick="openCalc('basic')">Basic</button>
+      <button onclick="openCalc('scientific')">Scientific</button>
+      <button onclick="openCalc('finance')">Finance</button>
+      <button onclick="openCalc('loan')">Loan</button>
+      <button onclick="openCalc('percentage')">Percentage</button>
+      <button onclick="openCalc('bmi')">BMI</button>
+      <button onclick="openCalc('date')">Date</button>
+      <button onclick="openCalc('unit')">Unit</button>
+      <button onclick="openCalc('statistics')">Statistics</button>
+    </section>
+
+    <!-- Basic -->
+    <section id="basic" class="card hidden">
+      <h2>Basic Calculator</h2>
+      <input type="number" id="b1" aria-label="First number">
+      <input type="number" id="b2" aria-label="Second number">
+      <select id="bOp" aria-label="Operation">
+        <option value="add">+</option>
+        <option value="sub">−</option>
+        <option value="mul">×</option>
+        <option value="div">÷</option>
+      </select>
+      <div id="bErr" class="error"></div>
+      <button class="action" onclick="calcBasic()">Calculate</button>
+      <button class="action" onclick="resetCalc('basic')">Reset</button>
+      <div id="bRes" class="result"></div>
+    </section>
+
+    <!-- Scientific -->
+    <section id="scientific" class="card hidden">
+      <h2>Scientific Calculator</h2>
+      <label><input type="radio" name="angleMode" value="deg" checked> Degree</label>
+      <label><input type="radio" name="angleMode" value="rad"> Radian</label>
+      <input type="text" id="sExp" aria-label="Expression">
+      <div id="sErr" class="error"></div>
+      <button class="action" onclick="calcScientific()">Calculate</button>
+      <button class="action" onclick="resetCalc('scientific')">Reset</button>
+      <div id="sRes" class="result"></div>
+    </section>
+
+    <!-- Finance -->
+    <section id="finance" class="card hidden">
+      <h2>Finance Calculator</h2>
+      <select id="fType" aria-label="Finance type">
+        <option value="simple">Simple Interest</option>
+        <option value="compound">Compound Interest</option>
+      </select>
+      <input type="number" id="fP" placeholder="Principal" aria-label="Principal">
+      <input type="number" id="fR" placeholder="Rate (%)" aria-label="Rate percent">
+      <input type="number" id="fT" placeholder="Time (years)" aria-label="Time in years">
+      <div id="fErr" class="error"></div>
+      <button class="action" onclick="calcFinance()">Calculate</button>
+      <button class="action" onclick="resetCalc('finance')">Reset</button>
+      <div id="fRes" class="result"></div>
+    </section>
+
+    <!-- Loan -->
+    <section id="loan" class="card hidden">
+      <h2>Loan Calculator</h2>
+      <input type="number" id="lP" placeholder="Loan Amount" aria-label="Loan amount">
+      <input type="number" id="lR" placeholder="Annual Rate (%)" aria-label="Rate percent">
+      <input type="number" id="lT" placeholder="Time (years)" aria-label="Time years">
+      <div id="lErr" class="error"></div>
+      <button class="action" onclick="calcLoan()">Calculate</button>
+      <button class="action" onclick="resetCalc('loan')">Reset</button>
+      <div id="lRes" class="result"></div>
+    </section>
+
+    <!-- Percentage -->
+    <section id="percentage" class="card hidden">
+      <h2>Percentage Calculator</h2>
+      <input type="number" id="pVal" placeholder="Value" aria-label="Value">
+      <input type="number" id="pTot" placeholder="Total" aria-label="Total">
+      <div id="pErr" class="error"></div>
+      <button class="action" onclick="calcPercent()">Calculate</button>
+      <button class="action" onclick="resetCalc('percentage')">Reset</button>
+      <div id="pRes" class="result"></div>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="card hidden">
+      <h2>BMI Calculator</h2>
+      <input type="number" id="m" placeholder="Weight (kg)" aria-label="Weight in kg">
+      <input type="number" id="h" placeholder="Height (cm)" aria-label="Height in cm">
+      <div id="mErr" class="error"></div>
+      <button class="action" onclick="calcBMI()">Calculate</button>
+      <button class="action" onclick="resetCalc('bmi')">Reset</button>
+      <div id="mRes" class="result"></div>
+    </section>
+
+    <!-- Date -->
+    <section id="date" class="card hidden">
+      <h2>Date Difference</h2>
+      <input type="date" id="d1" aria-label="First date">
+      <input type="date" id="d2" aria-label="Second date">
+      <div id="dErr" class="error"></div>
+      <button class="action" onclick="calcDate()">Calculate</button>
+      <button class="action" onclick="resetCalc('date')">Reset</button>
+      <div id="dRes" class="result"></div>
+    </section>
+
+    <!-- Unit -->
+    <section id="unit" class="card hidden">
+      <h2>Unit Converter</h2>
+      <input type="number" id="uVal" placeholder="Value" aria-label="Value to convert">
+      <select id="uType" aria-label="Unit type">
+        <option value="km-mi">Kilometers → Miles</option>
+        <option value="mi-km">Miles → Kilometers</option>
+        <option value="kg-lb">Kg → Lb</option>
+        <option value="lb-kg">Lb → Kg</option>
+      </select>
+      <div id="uErr" class="error"></div>
+      <button class="action" onclick="calcUnit()">Convert</button>
+      <button class="action" onclick="resetCalc('unit')">Reset</button>
+      <div id="uRes" class="result"></div>
+    </section>
+
+    <!-- Statistics -->
+    <section id="statistics" class="card hidden">
+      <h2>Statistics Calculator</h2>
+      <input type="text" id="stVals" placeholder="Numbers separated by comma" aria-label="List of numbers">
+      <div id="stErr" class="error"></div>
+      <button class="action" onclick="calcStats()">Calculate</button>
+      <button class="action" onclick="resetCalc('statistics')">Reset</button>
+      <div id="stRes" class="result"></div>
+    </section>
+  </main>
+
+  <script>
+    function openCalc(id){
+      document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function resetCalc(id){
+      document.getElementById(id).querySelectorAll('input,select').forEach(el=>el.value="");
+      document.getElementById(id).querySelectorAll('.result').forEach(el=>el.innerHTML="");
+      document.getElementById(id).querySelectorAll('.error').forEach(el=>el.innerHTML="");
+    }
+    function toggleTheme(){
+      let body=document.body;
+      if(body.dataset.theme==="light"){
+        body.dataset.theme="dark";
+        document.querySelector(".toggle-theme").innerText="☀️ Light";
+      } else {
+        body.dataset.theme="light";
+        document.querySelector(".toggle-theme").innerText="🌙 Dark";
+      }
+    }
+
+    function calcBasic(){
+      let a=+document.getElementById("b1").value;
+      let b=+document.getElementById("b2").value;
+      let op=document.getElementById("bOp").value;
+      if(isNaN(a)||isNaN(b)){
+        document.getElementById("bErr").innerText="Please enter both numbers.";
+        return;
+      }
+      document.getElementById("bErr").innerText="";
+      let r=0;
+      if(op=="add") r=a+b;
+      if(op=="sub") r=a-b;
+      if(op=="mul") r=a*b;
+      if(op=="div") { if(b==0){document.getElementById("bErr").innerText="Cannot divide by zero."; return;} r=a/b;}
+      document.getElementById("bRes").innerText="Result: "+r;
+    }
+
+    function calcScientific(){
+      let exp=document.getElementById("sExp").value;
+      let mode=document.querySelector('input[name="angleMode"]:checked').value;
+      try{
+        let r=exp.replace(/sin|cos|tan/g, m=>`Math.${m}`)
+                 .replace(/log/g,'Math.log10')
+                 .replace(/√/g,'Math.sqrt')
+                 .replace(/\^/g,'**');
+        if(mode=="deg"){
+          r=r.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)')
+             .replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)')
+             .replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
+        }
+        let val=eval(r);
+        document.getElementById("sErr").innerText="";
+        document.getElementById("sRes").innerText="Result: "+val;
+      }catch(e){
+        document.getElementById("sErr").innerText="Invalid expression.";
+      }
+    }
+
+    function calcFinance(){
+      let P=+fP.value, R=+fR.value/100, T=+fT.value, type=fType.value;
+      if(isNaN(P)||isNaN(R)||isNaN(T)){fErr.innerText="Please fill all fields.";return;}
+      fErr.innerText="";
+      let A=0;
+      if(type=="simple") A=P*(1+R*T);
+      else A=P*Math.pow(1+R,T);
+      fRes.innerText="Amount: "+A.toFixed(2);
+    }
+
+    function calcLoan(){
+      let P=+lP.value, R=+lR.value/100/12, T=+lT.value*12;
+      if(isNaN(P)||isNaN(R)||isNaN(T)){lErr.innerText="Please fill all fields.";return;}
+      lErr.innerText="";
+      let M=(P*R*Math.pow(1+R,T))/(Math.pow(1+R,T)-1);
+      lRes.innerText="Monthly Payment: "+M.toFixed(2);
+    }
+
+    function calcPercent(){
+      let v=+pVal.value, t=+pTot.value;
+      if(isNaN(v)||isNaN(t)||t==0){pErr.innerText="Enter value and total (not zero).";return;}
+      pErr.innerText="";
+      pRes.innerText="Result: "+((v/t)*100).toFixed(2)+"%";
+    }
+
+    function calcBMI(){
+      let m=+document.getElementById("m").value;
+      let h=+document.getElementById("h").value/100;
+      if(isNaN(m)||isNaN(h)||h==0){mErr.innerText="Fill weight and height.";return;}
+      mErr.innerText="";
+      let bmi=m/(h*h);
+      let cat=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
+      mRes.innerText="BMI: "+bmi.toFixed(2)+" ("+cat+")";
+    }
+
+    function calcDate(){
+      let d1=new Date(document.getElementById("d1").value);
+      let d2=new Date(document.getElementById("d2").value);
+      if(!d1||!d2||isNaN(d1)||isNaN(d2)){dErr.innerText="Choose both dates.";return;}
+      dErr.innerText="";
+      let diff=Math.abs(d2-d1)/(1000*3600*24);
+      dRes.innerText="Difference: "+diff+" days";
+    }
+
+    function calcUnit(){
+      let v=+uVal.value; let t=uType.value;
+      if(isNaN(v)){uErr.innerText="Enter a value.";return;}
+      uErr.innerText="";
+      let res=0;
+      if(t=="km-mi") res=v*0.621371;
+      if(t=="mi-km") res=v/0.621371;
+      if(t=="kg-lb") res=v*2.20462;
+      if(t=="lb-kg") res=v/2.20462;
+      uRes.innerText="Result: "+res.toFixed(2);
+    }
+
+    function calcStats(){
+      let arr=stVals.value.split(",").map(x=>+x.trim()).filter(x=>!isNaN(x));
+      if(arr.length==0){stErr.innerText="Enter valid numbers separated by comma.";return;}
+      stErr.innerText="";
+      let mean=arr.reduce((a,b)=>a+b,0)/arr.length;
+      let sorted=[...arr].sort((a,b)=>a-b);
+      let median=sorted.length%2?sorted[Math.floor(sorted.length/2)]
+                  :(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+      let freq={}; arr.forEach(x=>freq[x]=(freq[x]||0)+1);
+      let maxF=Math.max(...Object.values(freq));
+      let mode=Object.keys(freq).filter(k=>freq[k]==maxF).join(",");
+      let variance=arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+      let std=Math.sqrt(variance);
+      let range=sorted[sorted.length-1]-sorted[0];
+      stRes.innerText=`Mean: ${mean.toFixed(2)}, Median: ${median}, Mode: ${mode}, Variance: ${variance.toFixed(2)}, Std Dev: ${std.toFixed(2)}, Range: ${range}`;
+    }
+  </script>
+</body>
+</html>
