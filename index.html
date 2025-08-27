@@ -1,281 +1,2825 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Multi Calculator</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Smart Multi Calculator — Full</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --text: #222;
-      --card: #fff;
-      --accent: #0066cc;
-      --accent-dark: #004999;
+    :root{
+      --bg:#f5f7fb; --text:#111; --card:#fff;
+      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
+      --error:#d9534f;
     }
-    [data-theme="dark"] {
-      --bg: #121212;
-      --text: #f5f5f5;
-      --card: #1e1e1e;
-      --accent: #4da6ff;
-      --accent-dark: #1a73e8;
+    [data-theme="dark"]{
+      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
+      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
     }
-    body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: var(--bg); color: var(--text);
-      transition: background 0.3s, color 0.3s;
-    }
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem; background: var(--accent); color: #fff;
-    }
-    header h1 { margin: 0; font-size: 1.2rem; }
-    .toggle-btn {
-      background: #fff; color: var(--accent);
-      border: none; padding: 0.5rem 1rem; border-radius: 1rem;
-      cursor: pointer; font-weight: bold;
-    }
-    .container {
-      max-width: 600px; margin: 1rem auto; padding: 1rem;
-    }
-    .menu {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-    }
-    .menu button {
-      background: var(--card); border: 2px solid var(--accent);
-      padding: 1rem; border-radius: 1rem;
-      cursor: pointer; font-size: 1rem; font-weight: bold;
-      transition: all 0.3s;
-    }
-    .menu button:hover {
-      background: var(--accent); color: #fff;
-    }
-    .calculator {
-      display: none; background: var(--card);
-      padding: 1.5rem; border-radius: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    .calculator.active { display: block; }
-    h2 { margin-top: 0; }
-    input, select, button {
-      margin: 0.3rem 0; padding: 0.5rem; font-size: 1rem;
-      border-radius: 0.5rem; border: 1px solid #ccc; width: 100%;
-    }
-    button.action {
-      background: var(--accent); color: #fff;
-      border: none; cursor: pointer; font-weight: bold;
-    }
-    button.action:hover { background: var(--accent-dark); }
-    .result {
-      background: var(--bg); padding: 1rem;
-      margin-top: 1rem; border-radius: 0.5rem;
-      font-weight: bold;
-    }
-    .history {
-      margin-top: 1rem; font-size: 0.9rem;
-      background: var(--bg); padding: 0.5rem;
-      border-radius: 0.5rem; max-height: 150px; overflow-y: auto;
-    }
-    .back-btn {
-      margin-top: 1rem;
-      background: transparent; border: 2px solid var(--accent);
-      color: var(--accent); cursor: pointer; padding: 0.5rem 1rem;
-      border-radius: 1rem; font-weight: bold;
-    }
-    .back-btn:hover {
-      background: var(--accent); color: #fff;
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
+    header h1{font-size:1.05rem;margin:0}
+    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+    main{max-width:980px;margin:18px auto;padding:0 16px}
+    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
+    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
+    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    .panel.active{display:block}
+    h2{margin:0 0 10px 0;color:var(--accent-2)}
+    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
+    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
+    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
+    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
+    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+    @media (max-width:420px){.row{flex-direction:column}}
   </style>
 </head>
 <body data-theme="light">
   <header>
-    <h1>Smart Multi Calculator</h1>
-    <button class="toggle-btn" onclick="toggleTheme()">☀️/🌙</button>
-  </header>
-  <div class="container">
-    <!-- Main Menu -->
-    <div id="mainMenu" class="menu">
-      <button onclick="openCalc('basic')">Basic Calculator</button>
-      <button onclick="openCalc('scientific')">Scientific</button>
-      <button onclick="openCalc('finance')">Financial</button>
-      <button onclick="openCalc('stats')">Statistics</button>
-      <button onclick="openCalc('date')">Date & Time</button>
+    <h1>Smart Multi Calculator (Full)</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
     </div>
+  </header>
 
-    <!-- Basic Calculator -->
-    <div id="basic" class="calculator">
+  <main>
+    <!-- MAIN MENU -->
+    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
+      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
+        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
+        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
+        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
+        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
+        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
+        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
+        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
+        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
+      </div>
+    </section>
+
+    <!-- PANELS -->
+    <!-- Basic -->
+    <section id="basic" class="panel" aria-hidden="true">
       <h2>Basic Calculator</h2>
-      <input type="number" id="num1" aria-label="First number" placeholder="Enter number">
-      <input type="number" id="num2" aria-label="Second number" placeholder="Enter number">
-      <select id="operation">
+      <div class="row">
+        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
+        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
+      </div>
+      <label for="b_op">Operation</label>
+      <select id="b_op" aria-label="operation">
         <option value="add">+</option>
-        <option value="sub">-</option>
+        <option value="sub">−</option>
         <option value="mul">×</option>
         <option value="div">÷</option>
       </select>
-      <button class="action" onclick="calculateBasic()">Calculate</button>
-      <button class="action" onclick="clearBasic()">Clear</button>
-      <div id="basicResult" class="result">Result: -</div>
-      <div>
-        <button onclick="memoryAdd()">M+</button>
-        <button onclick="memoryRecall()">MR</button>
-        <button onclick="memoryClear()">MC</button>
+
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="basicCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="basicClear()">Clear</button>
+        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
+        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
+        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
       </div>
-      <div class="history" id="basicHistory"></div>
-      <button class="back-btn" onclick="goBack()">⬅ Back to Menu</button>
-    </div>
 
-    <!-- Scientific Calculator -->
-    <div id="scientific" class="calculator">
+      <div id="basicError" class="error" role="status" aria-live="polite"></div>
+      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
+
+      <div class="small" style="margin-top:8px">History (last 20):</div>
+      <div id="basicHistory" class="history-box" aria-live="polite"></div>
+
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Scientific -->
+    <section id="scientific" class="panel" aria-hidden="true">
       <h2>Scientific Calculator</h2>
-      <input type="text" id="sciInput" placeholder="Enter expression e.g. sin(45) + log(10)">
-      <button class="action" onclick="calculateScientific()">Calculate</button>
-      <div id="sciResult" class="result">Result: -</div>
-      <button class="back-btn" onclick="goBack()">⬅ Back to Menu</button>
-    </div>
+      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
+      <label>Angle mode</label>
+      <select id="s_mode" aria-label="angle mode">
+        <option value="deg">Degrees</option>
+        <option value="rad">Radians</option>
+      </select>
+      <label for="s_expr">Expression</label>
+      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
+      </div>
+      <div id="sError" class="error"></div>
+      <div id="sResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
 
-    <!-- Financial Calculator -->
-    <div id="finance" class="calculator">
+    <!-- Programmer -->
+    <section id="programmer" class="panel" aria-hidden="true">
+      <h2>Programmer Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
+        <div class="col">
+          <label for="progBase">Bitwise / convert</label>
+          <select id="progOp" aria-label="programmer op">
+            <option value="toBin">To Binary</option>
+            <option value="toHex">To Hex</option>
+            <option value="toOct">To Octal</option>
+            <option value="and">AND (with)</option>
+            <option value="or">OR (with)</option>
+            <option value="xor">XOR (with)</option>
+            <option value="shl">Shift Left (bits)</option>
+            <option value="shr">Shift Right (bits)</option>
+          </select>
+        </div>
+      </div>
+      <label for="progSecond">Second operand (for bitwise/shift)</label>
+      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="programmerCalc()">Run</button>
+        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
+      </div>
+      <div id="progError" class="error"></div>
+      <div id="progResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Finance -->
+    <section id="finance" class="panel" aria-hidden="true">
       <h2>Financial Calculator</h2>
-      <label>Principal:</label>
-      <input type="number" id="principal" placeholder="Enter amount">
-      <label>Rate (%):</label>
-      <input type="number" id="rate" placeholder="Enter rate">
-      <label>Time (years):</label>
-      <input type="number" id="time" placeholder="Enter years">
-      <select id="financeType">
+      <label for="finType">Type</label>
+      <select id="finType" aria-label="finance type">
         <option value="simple">Simple Interest</option>
         <option value="compound">Compound Interest</option>
       </select>
-      <button class="action" onclick="calculateFinance()">Calculate</button>
-      <div id="financeResult" class="result">Result: -</div>
-      <button class="back-btn" onclick="goBack()">⬅ Back to Menu</button>
-    </div>
+      <label>Principal</label><input id="finP" type="number" aria-label="principal">
+      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
+      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="financeCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
+      </div>
+      <div id="finError" class="error"></div>
+      <div id="finResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
 
-    <!-- Statistics Calculator -->
-    <div id="stats" class="calculator">
-      <h2>Statistics Calculator</h2>
-      <input type="text" id="statsInput" placeholder="Enter numbers separated by comma">
-      <button class="action" onclick="calculateStats()">Calculate</button>
+    <!-- Loan -->
+    <section id="loan" class="panel" aria-hidden="true">
+      <h2>Loan EMI Calculator</h2>
+      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
+      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
+      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="loanCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
+      </div>
+      <div id="loanError" class="error"></div>
+      <div id="loanResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Percentage -->
+    <section id="percentage" class="panel" aria-hidden="true">
+      <h2>Percentage Calculator</h2>
+      <label>Value</label><input id="pctValue" type="number" aria-label="value">
+      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="percentageCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
+      </div>
+      <div id="pctError" class="error"></div>
+      <div id="pctResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="panel" aria-hidden="true">
+      <h2>BMI Calculator</h2>
+      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
+      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
+      </div>
+      <div id="bmiError" class="error"></div>
+      <div id="bmiResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Unit Converter -->
+    <section id="unit" class="panel" aria-hidden="true">
+      <h2>Unit Converter</h2>
+      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
+      <label>Conversion</label>
+      <select id="unitOp" aria-label="unit op">
+        <optgroup label="Length">
+          <option value="m-km">m → km</option>
+          <option value="km-m">km → m</option>
+          <option value="m-mi">m → miles</option>
+          <option value="mi-m">miles → m</option>
+        </optgroup>
+        <optgroup label="Weight">
+          <option value="kg-lb">kg → lb</option>
+          <option value="lb-kg">lb → kg</option>
+        </optgroup>
+        <optgroup label="Temperature">
+          <option value="c-f">°C → °F</option>
+          <option value="f-c">°F → °C</option>
+          <option value="c-k">°C → K</option>
+        </optgroup>
+        <optgroup label="Volume">
+          <option value="l-ml">L → mL</option>
+          <option value="ml-l">mL → L</option>
+        </optgroup>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="unitConvert()">Convert</button>
+        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
+      </div>
+      <div id="unitError" class="error"></div>
+      <div id="unitResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Statistics -->
+    <section id="statistics" class="panel" aria-hidden="true">
+      <h2>Statistics</h2>
+      <label>Numbers (comma separated)</label>
+      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="statsCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
+      </div>
+      <div id="statsError" class="error"></div>
       <div id="statsResult" class="result">Result: -</div>
-      <button class="back-btn" onclick="goBack()">⬅ Back to Menu</button>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- GCD / LCM -->
+    <section id="gcdlcm" class="panel" aria-hidden="true">
+      <h2>GCD & LCM</h2>
+      <label>Numbers (comma separated, integers)</label>
+      <input id="gNums" aria-label="gcd numbers">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
+      </div>
+      <div id="gError" class="error"></div>
+      <div id="gResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Matrix (2x2 & 3x3) -->
+    <section id="matrix" class="panel" aria-hidden="true">
+      <h2>Matrix (2x2 / 3x3)</h2>
+      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
+      <label>Matrix A (comma separated)</label>
+      <input id="mA" aria-label="matrix A">
+      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
+      <input id="mB" aria-label="matrix B">
+      <label>Operation</label>
+      <select id="mOp" aria-label="matrix op">
+        <option value="det">Determinant (A)</option>
+        <option value="inv">Inverse (A)</option>
+        <option value="add">A + B</option>
+        <option value="mul">A × B</option>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="matrixCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
+      </div>
+      <div id="mError" class="error"></div>
+      <div id="mResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Age -->
+    <section id="age" class="panel" aria-hidden="true">
+      <h2>Age Calculator</h2>
+      <label>Birthdate</label>
+      <input id="birth" type="date" aria-label="birthdate">
+      <label>Reference date (optional — leave blank = today)</label>
+      <input id="refdate" type="date" aria-label="reference date">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
+        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
+      </div>
+      <div id="ageError" class="error"></div>
+      <div id="ageResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <footer>© Smart Multi Calculator — offline build</footer>
+  </main>
+
+<script>
+/* ========== THEME ========== */
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.getElementById('themeBtn');
+  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
+  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
+}
+
+/* ========== NAV ========== */
+function openPanel(id){
+  document.getElementById('menuGrid').style.display='none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById(id);
+  panel.classList.add('active');
+  panel.style.display='block';
+  panel.setAttribute('aria-hidden','false');
+  // fix: ensure text color on menu cards (handled by CSS variables)
+}
+function goHome(){
+  document.getElementById('menuGrid').style.display='grid';
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
+  });
+}
+
+/* ========== UTILS ========== */
+function parseNumberList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
+}
+function isInt(n){ return Number.isInteger(n); }
+
+/* ========== BASIC (history + memory) ========== */
+let basicMemory = null;
+let basicHistory = [];
+function basicCalculate(){
+  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
+  const op=document.getElementById('b_op').value;
+  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
+  error.innerText=''; out.innerText='Result: -';
+  const x=parseFloat(a), y=parseFloat(b);
+  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
+  let r;
+  if(op==='add') r=x+y;
+  if(op==='sub') r=x-y;
+  if(op==='mul') r=x*y;
+  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
+  out.innerText='Result: '+r;
+  basicHistory.push(`${x} ${op} ${y} = ${r}`);
+  if(basicHistory.length>20) basicHistory.shift();
+  renderBasicHistory();
+}
+function renderBasicHistory(){
+  const box=document.getElementById('basicHistory');
+  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
+}
+function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
+function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
+function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
+function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
+
+/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
+function scientificCalculate(){
+  const expr=document.getElementById('s_expr').value;
+  const mode=document.getElementById('s_mode').value;
+  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
+  err.innerText=''; resEl.innerText='Result: -';
+  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
+  try{
+    // Map functions to Math.* and handle ^ as **
+    let e=expr.replace(/√/g,'sqrt');
+    e=e.replace(/\^/g,'**');
+    // safe replacements (case-insensitive)
+    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
+      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
+      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
+      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
+      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
+      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
+      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
+      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
+      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
+      .replace(/(?<![\w.])e\b/gi,'Math.E');
+    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
+    if(mode==='deg'){
+      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
+      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
+      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
+    }
+    // allow Math.log10 helper
+    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
+    // Evaluate (note: works offline; user input only)
+    const value = eval(e);
+    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
+    else resEl.innerText = 'Result: ' + value;
+  }catch(errCatch){
+    err.innerText = 'Invalid expression';
+  }
+}
+
+/* ========== PROGRAMMER (base & bitwise) ========== */
+function programmerCalc(){
+  const n = parseInt(document.getElementById('progInput').value);
+  const op = document.getElementById('progOp').value;
+  const sec = parseInt(document.getElementById('progSecond').value);
+  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
+  err.innerText=''; out.innerText='Result: -';
+  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
+  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
+  try{
+    let r;
+    if(op==='toBin') r = n.toString(2);
+    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
+    if(op==='toOct') r = n.toString(8);
+    if(op==='and') r = (n & sec);
+    if(op==='or') r = (n | sec);
+    if(op==='xor') r = (n ^ sec);
+    if(op==='shl') r = (n << sec);
+    if(op==='shr') r = (n >> sec);
+    out.innerText = 'Result: '+ r;
+  }catch(e){ err.innerText='Error computing'; }
+}
+
+/* ========== FINANCE ========== */
+function financeCalc(){
+  const type=document.getElementById('finType').value;
+  const P=parseFloat(document.getElementById('finP').value);
+  const R=parseFloat(document.getElementById('finR').value)/100;
+  const T=parseFloat(document.getElementById('finT').value);
+  const e=document.getElementById('finError'), o=document.getElementById('finResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
+  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
+  o.innerText='Result: '+ amount.toFixed(2);
+}
+
+/* ========== LOAN ========== */
+function loanCalculate(){
+  const P=parseFloat(document.getElementById('loanP').value);
+  const annual=parseFloat(document.getElementById('loanR').value);
+  const years=parseFloat(document.getElementById('loanT').value);
+  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
+  const r = annual/100/12; const n = years*12;
+  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
+}
+
+/* ========== PERCENTAGE ========== */
+function percentageCalc(){
+  const v = parseFloat(document.getElementById('pctValue').value);
+  const t = parseFloat(document.getElementById('pctTotal').value);
+  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter a value'; return; }
+  if(isNaN(t) || t===0){
+    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
+    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
+    // But we can also compute percent-of as value is considered percentage? Keep simple:
+    return;
+  }
+  const percent = (v/t)*100;
+  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
+}
+
+/* ========== BMI ========== */
+function bmiCalculate(){
+  const w=parseFloat(document.getElementById('bmiW').value);
+  const h=parseFloat(document.getElementById('bmiH').value)/100;
+  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
+  const bmi = w/(h*h);
+  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
+}
+
+/* ========== UNIT CONVERTER ========== */
+function unitConvert(){
+  const v=parseFloat(document.getElementById('unitV').value);
+  const op=document.getElementById('unitOp').value;
+  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter value'; return; }
+  let res;
+  switch(op){
+    case 'm-km': res = (v/1000) + ' km'; break;
+    case 'km-m': res = (v*1000) + ' m'; break;
+    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
+    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
+    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
+    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
+    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
+    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
+    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
+    case 'l-ml': res = (v*1000)+' mL'; break;
+    case 'ml-l': res = (v/1000)+' L'; break;
+    default: res = 'Unsupported op'; break;
+  }
+  o.innerText = 'Result: '+res;
+}
+
+/* ========== STATISTICS ========== */
+function statsCalculate(){
+  const raw = document.getElementById('statsIn').value;
+  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
+  e.innerText=''; o.innerText='Result: -';
+  const arr = parseNumberList(raw);
+  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
+  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+  const sorted = arr.slice().sort((a,b)=>a-b);
+  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
+  const maxF = Math.max(...Object.values(freq));
+  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
+  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+  const sd = Math.sqrt(variance);
+  const range = sorted[sorted.length-1] - sorted[0];
+  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
+}
+
+/* ========== GCD & LCM ========== */
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
+function calcGcdLcm(){
+  const raw = document.getElementById('gNums').value;
+  const arr = parseNumberList(raw).map(Math.trunc);
+  const e=document.getElementById('gError'), o=document.getElementById('gResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
+  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
+  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
+  o.innerText = `GCD: ${g}, LCM: ${L}`;
+}
+
+/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
+function parseMatrix(arr){
+  // returns {n:2 or 3, mat:[[...]]} or null
+  const len=arr.length;
+  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
+  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
+  return null;
+}
+function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function inverse2(m){
+  const d = det2(m); if(d===0) return null;
+  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
+  return inv;
+}
+function transpose(m){
+  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
+  return res;
+}
+function multiply(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
+  return res;
+}
+function addMatrix(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
+  return res;
+}
+function matrixCalc(){
+  const Araw = parseNumberList(document.getElementById('mA').value);
+  const Brow = parseNumberList(document.getElementById('mB').value);
+  const op = document.getElementById('mOp').value;
+  const e=document.getElementById('mError'), o=document.getElementById('mResult');
+  e.innerText=''; o.innerText='Result: -';
+  const MA = parseMatrix(Araw);
+  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
+  if(op==='det'){
+    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
+    o.innerText = 'Determinant: ' + d;
+    return;
+  }
+  if(op==='inv'){
+    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
+    // 3x3 inverse (use adjugate / det)
+    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+    // compute cofactor matrix then transpose and divide by det
+    const m=MA.mat;
+    const cof = [
+      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
+      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
+      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
+    ];
+    const adj = transpose(cof);
+    const inv = adj.map(row => row.map(v=>v/d));
+    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+    return;
+  }
+  // operations requiring B:
+  const MB = parseMatrix(Brow);
+  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
+  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
+  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
+  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
+}
+
+/* ========== AGE ========== */
+function ageCalc(){
+  const b=document.getElementById('birth').value;
+  const ref=document.getElementById('refdate').value;
+  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(!b){ e.innerText='Select birthdate'; return; }
+  const birth = new Date(b);
+  const now = ref ? new Date(ref) : new Date();
+  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
+  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
+  let y = now.getFullYear() - birth.getFullYear();
+  let m = now.getMonth() - birth.getMonth();
+  let d = now.getDate() - birth.getDate();
+  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
+  if(m<0){ y-=1; m+=12; }
+  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
+}
+
+/* ========== UTILITY: RESET PANEL ========== */
+function resetPanel(id){
+  const panel = document.getElementById(id);
+  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
+  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
+  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
+  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
+}
+
+/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter'){
+    const active = document.querySelector('.panel.active');
+    if(!active) return;
+    const id = active.id;
+    // map Enter to calculation function per panel:
+    if(id==='basic') basicCalculate();
+    if(id==='scientific') scientificCalculate();
+    if(id==='programmer') programmerCalc();
+    if(id==='finance') financeCalc();
+    if(id==='loan') loanCalculate();
+    if(id==='percentage') percentageCalc();
+    if(id==='bmi') bmiCalculate();
+    if(id==='unit') unitConvert();
+    if(id==='statistics') statsCalculate();
+    if(id==='gcdlcm') calcGcdLcm();
+    if(id==='matrix') matrixCalc();
+    if(id==='age') ageCalc();
+  }
+});
+
+/* ========== INITIAL RENDER ========= */
+renderBasicHistory();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Smart Multi Calculator — Full</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --text:#111; --card:#fff;
+      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
+      --error:#d9534f;
+    }
+    [data-theme="dark"]{
+      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
+      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
+    header h1{font-size:1.05rem;margin:0}
+    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+    main{max-width:980px;margin:18px auto;padding:0 16px}
+    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
+    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
+    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    .panel.active{display:block}
+    h2{margin:0 0 10px 0;color:var(--accent-2)}
+    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
+    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
+    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
+    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
+    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+    @media (max-width:420px){.row{flex-direction:column}}
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <h1>Smart Multi Calculator (Full)</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
     </div>
+  </header>
 
-    <!-- Date Calculator -->
-    <div id="date" class="calculator">
-      <h2>Date Difference Calculator</h2>
-      <label>Start Date:</label>
-      <input type="date" id="date1">
-      <label>End Date:</label>
-      <input type="date" id="date2">
-      <button class="action" onclick="calculateDate()">Calculate</button>
-      <div id="dateResult" class="result">Result: -</div>
-      <button class="back-btn" onclick="goBack()">⬅ Back to Menu</button>
+  <main>
+    <!-- MAIN MENU -->
+    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
+      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
+        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
+        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
+        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
+        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
+        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
+        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
+        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
+        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
+      </div>
+    </section>
+
+    <!-- PANELS -->
+    <!-- Basic -->
+    <section id="basic" class="panel" aria-hidden="true">
+      <h2>Basic Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
+        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
+      </div>
+      <label for="b_op">Operation</label>
+      <select id="b_op" aria-label="operation">
+        <option value="add">+</option>
+        <option value="sub">−</option>
+        <option value="mul">×</option>
+        <option value="div">÷</option>
+      </select>
+
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="basicCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="basicClear()">Clear</button>
+        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
+        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
+        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
+      </div>
+
+      <div id="basicError" class="error" role="status" aria-live="polite"></div>
+      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
+
+      <div class="small" style="margin-top:8px">History (last 20):</div>
+      <div id="basicHistory" class="history-box" aria-live="polite"></div>
+
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Scientific -->
+    <section id="scientific" class="panel" aria-hidden="true">
+      <h2>Scientific Calculator</h2>
+      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
+      <label>Angle mode</label>
+      <select id="s_mode" aria-label="angle mode">
+        <option value="deg">Degrees</option>
+        <option value="rad">Radians</option>
+      </select>
+      <label for="s_expr">Expression</label>
+      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
+      </div>
+      <div id="sError" class="error"></div>
+      <div id="sResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Programmer -->
+    <section id="programmer" class="panel" aria-hidden="true">
+      <h2>Programmer Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
+        <div class="col">
+          <label for="progBase">Bitwise / convert</label>
+          <select id="progOp" aria-label="programmer op">
+            <option value="toBin">To Binary</option>
+            <option value="toHex">To Hex</option>
+            <option value="toOct">To Octal</option>
+            <option value="and">AND (with)</option>
+            <option value="or">OR (with)</option>
+            <option value="xor">XOR (with)</option>
+            <option value="shl">Shift Left (bits)</option>
+            <option value="shr">Shift Right (bits)</option>
+          </select>
+        </div>
+      </div>
+      <label for="progSecond">Second operand (for bitwise/shift)</label>
+      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="programmerCalc()">Run</button>
+        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
+      </div>
+      <div id="progError" class="error"></div>
+      <div id="progResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Finance -->
+    <section id="finance" class="panel" aria-hidden="true">
+      <h2>Financial Calculator</h2>
+      <label for="finType">Type</label>
+      <select id="finType" aria-label="finance type">
+        <option value="simple">Simple Interest</option>
+        <option value="compound">Compound Interest</option>
+      </select>
+      <label>Principal</label><input id="finP" type="number" aria-label="principal">
+      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
+      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="financeCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
+      </div>
+      <div id="finError" class="error"></div>
+      <div id="finResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Loan -->
+    <section id="loan" class="panel" aria-hidden="true">
+      <h2>Loan EMI Calculator</h2>
+      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
+      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
+      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="loanCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
+      </div>
+      <div id="loanError" class="error"></div>
+      <div id="loanResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Percentage -->
+    <section id="percentage" class="panel" aria-hidden="true">
+      <h2>Percentage Calculator</h2>
+      <label>Value</label><input id="pctValue" type="number" aria-label="value">
+      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="percentageCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
+      </div>
+      <div id="pctError" class="error"></div>
+      <div id="pctResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="panel" aria-hidden="true">
+      <h2>BMI Calculator</h2>
+      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
+      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
+      </div>
+      <div id="bmiError" class="error"></div>
+      <div id="bmiResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Unit Converter -->
+    <section id="unit" class="panel" aria-hidden="true">
+      <h2>Unit Converter</h2>
+      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
+      <label>Conversion</label>
+      <select id="unitOp" aria-label="unit op">
+        <optgroup label="Length">
+          <option value="m-km">m → km</option>
+          <option value="km-m">km → m</option>
+          <option value="m-mi">m → miles</option>
+          <option value="mi-m">miles → m</option>
+        </optgroup>
+        <optgroup label="Weight">
+          <option value="kg-lb">kg → lb</option>
+          <option value="lb-kg">lb → kg</option>
+        </optgroup>
+        <optgroup label="Temperature">
+          <option value="c-f">°C → °F</option>
+          <option value="f-c">°F → °C</option>
+          <option value="c-k">°C → K</option>
+        </optgroup>
+        <optgroup label="Volume">
+          <option value="l-ml">L → mL</option>
+          <option value="ml-l">mL → L</option>
+        </optgroup>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="unitConvert()">Convert</button>
+        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
+      </div>
+      <div id="unitError" class="error"></div>
+      <div id="unitResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Statistics -->
+    <section id="statistics" class="panel" aria-hidden="true">
+      <h2>Statistics</h2>
+      <label>Numbers (comma separated)</label>
+      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="statsCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
+      </div>
+      <div id="statsError" class="error"></div>
+      <div id="statsResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- GCD / LCM -->
+    <section id="gcdlcm" class="panel" aria-hidden="true">
+      <h2>GCD & LCM</h2>
+      <label>Numbers (comma separated, integers)</label>
+      <input id="gNums" aria-label="gcd numbers">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
+      </div>
+      <div id="gError" class="error"></div>
+      <div id="gResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Matrix (2x2 & 3x3) -->
+    <section id="matrix" class="panel" aria-hidden="true">
+      <h2>Matrix (2x2 / 3x3)</h2>
+      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
+      <label>Matrix A (comma separated)</label>
+      <input id="mA" aria-label="matrix A">
+      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
+      <input id="mB" aria-label="matrix B">
+      <label>Operation</label>
+      <select id="mOp" aria-label="matrix op">
+        <option value="det">Determinant (A)</option>
+        <option value="inv">Inverse (A)</option>
+        <option value="add">A + B</option>
+        <option value="mul">A × B</option>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="matrixCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
+      </div>
+      <div id="mError" class="error"></div>
+      <div id="mResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Age -->
+    <section id="age" class="panel" aria-hidden="true">
+      <h2>Age Calculator</h2>
+      <label>Birthdate</label>
+      <input id="birth" type="date" aria-label="birthdate">
+      <label>Reference date (optional — leave blank = today)</label>
+      <input id="refdate" type="date" aria-label="reference date">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
+        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
+      </div>
+      <div id="ageError" class="error"></div>
+      <div id="ageResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <footer>© Smart Multi Calculator — offline build</footer>
+  </main>
+
+<script>
+/* ========== THEME ========== */
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.getElementById('themeBtn');
+  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
+  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
+}
+
+/* ========== NAV ========== */
+function openPanel(id){
+  document.getElementById('menuGrid').style.display='none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById(id);
+  panel.classList.add('active');
+  panel.style.display='block';
+  panel.setAttribute('aria-hidden','false');
+  // fix: ensure text color on menu cards (handled by CSS variables)
+}
+function goHome(){
+  document.getElementById('menuGrid').style.display='grid';
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
+  });
+}
+
+/* ========== UTILS ========== */
+function parseNumberList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
+}
+function isInt(n){ return Number.isInteger(n); }
+
+/* ========== BASIC (history + memory) ========== */
+let basicMemory = null;
+let basicHistory = [];
+function basicCalculate(){
+  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
+  const op=document.getElementById('b_op').value;
+  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
+  error.innerText=''; out.innerText='Result: -';
+  const x=parseFloat(a), y=parseFloat(b);
+  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
+  let r;
+  if(op==='add') r=x+y;
+  if(op==='sub') r=x-y;
+  if(op==='mul') r=x*y;
+  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
+  out.innerText='Result: '+r;
+  basicHistory.push(`${x} ${op} ${y} = ${r}`);
+  if(basicHistory.length>20) basicHistory.shift();
+  renderBasicHistory();
+}
+function renderBasicHistory(){
+  const box=document.getElementById('basicHistory');
+  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
+}
+function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
+function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
+function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
+function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
+
+/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
+function scientificCalculate(){
+  const expr=document.getElementById('s_expr').value;
+  const mode=document.getElementById('s_mode').value;
+  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
+  err.innerText=''; resEl.innerText='Result: -';
+  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
+  try{
+    // Map functions to Math.* and handle ^ as **
+    let e=expr.replace(/√/g,'sqrt');
+    e=e.replace(/\^/g,'**');
+    // safe replacements (case-insensitive)
+    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
+      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
+      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
+      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
+      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
+      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
+      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
+      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
+      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
+      .replace(/(?<![\w.])e\b/gi,'Math.E');
+    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
+    if(mode==='deg'){
+      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
+      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
+      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
+    }
+    // allow Math.log10 helper
+    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
+    // Evaluate (note: works offline; user input only)
+    const value = eval(e);
+    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
+    else resEl.innerText = 'Result: ' + value;
+  }catch(errCatch){
+    err.innerText = 'Invalid expression';
+  }
+}
+
+/* ========== PROGRAMMER (base & bitwise) ========== */
+function programmerCalc(){
+  const n = parseInt(document.getElementById('progInput').value);
+  const op = document.getElementById('progOp').value;
+  const sec = parseInt(document.getElementById('progSecond').value);
+  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
+  err.innerText=''; out.innerText='Result: -';
+  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
+  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
+  try{
+    let r;
+    if(op==='toBin') r = n.toString(2);
+    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
+    if(op==='toOct') r = n.toString(8);
+    if(op==='and') r = (n & sec);
+    if(op==='or') r = (n | sec);
+    if(op==='xor') r = (n ^ sec);
+    if(op==='shl') r = (n << sec);
+    if(op==='shr') r = (n >> sec);
+    out.innerText = 'Result: '+ r;
+  }catch(e){ err.innerText='Error computing'; }
+}
+
+/* ========== FINANCE ========== */
+function financeCalc(){
+  const type=document.getElementById('finType').value;
+  const P=parseFloat(document.getElementById('finP').value);
+  const R=parseFloat(document.getElementById('finR').value)/100;
+  const T=parseFloat(document.getElementById('finT').value);
+  const e=document.getElementById('finError'), o=document.getElementById('finResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
+  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
+  o.innerText='Result: '+ amount.toFixed(2);
+}
+
+/* ========== LOAN ========== */
+function loanCalculate(){
+  const P=parseFloat(document.getElementById('loanP').value);
+  const annual=parseFloat(document.getElementById('loanR').value);
+  const years=parseFloat(document.getElementById('loanT').value);
+  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
+  const r = annual/100/12; const n = years*12;
+  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
+}
+
+/* ========== PERCENTAGE ========== */
+function percentageCalc(){
+  const v = parseFloat(document.getElementById('pctValue').value);
+  const t = parseFloat(document.getElementById('pctTotal').value);
+  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter a value'; return; }
+  if(isNaN(t) || t===0){
+    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
+    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
+    // But we can also compute percent-of as value is considered percentage? Keep simple:
+    return;
+  }
+  const percent = (v/t)*100;
+  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
+}
+
+/* ========== BMI ========== */
+function bmiCalculate(){
+  const w=parseFloat(document.getElementById('bmiW').value);
+  const h=parseFloat(document.getElementById('bmiH').value)/100;
+  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
+  const bmi = w/(h*h);
+  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
+}
+
+/* ========== UNIT CONVERTER ========== */
+function unitConvert(){
+  const v=parseFloat(document.getElementById('unitV').value);
+  const op=document.getElementById('unitOp').value;
+  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter value'; return; }
+  let res;
+  switch(op){
+    case 'm-km': res = (v/1000) + ' km'; break;
+    case 'km-m': res = (v*1000) + ' m'; break;
+    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
+    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
+    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
+    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
+    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
+    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
+    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
+    case 'l-ml': res = (v*1000)+' mL'; break;
+    case 'ml-l': res = (v/1000)+' L'; break;
+    default: res = 'Unsupported op'; break;
+  }
+  o.innerText = 'Result: '+res;
+}
+
+/* ========== STATISTICS ========== */
+function statsCalculate(){
+  const raw = document.getElementById('statsIn').value;
+  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
+  e.innerText=''; o.innerText='Result: -';
+  const arr = parseNumberList(raw);
+  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
+  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+  const sorted = arr.slice().sort((a,b)=>a-b);
+  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
+  const maxF = Math.max(...Object.values(freq));
+  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
+  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+  const sd = Math.sqrt(variance);
+  const range = sorted[sorted.length-1] - sorted[0];
+  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
+}
+
+/* ========== GCD & LCM ========== */
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
+function calcGcdLcm(){
+  const raw = document.getElementById('gNums').value;
+  const arr = parseNumberList(raw).map(Math.trunc);
+  const e=document.getElementById('gError'), o=document.getElementById('gResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
+  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
+  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
+  o.innerText = `GCD: ${g}, LCM: ${L}`;
+}
+
+/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
+function parseMatrix(arr){
+  // returns {n:2 or 3, mat:[[...]]} or null
+  const len=arr.length;
+  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
+  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
+  return null;
+}
+function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function inverse2(m){
+  const d = det2(m); if(d===0) return null;
+  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
+  return inv;
+}
+function transpose(m){
+  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
+  return res;
+}
+function multiply(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
+  return res;
+}
+function addMatrix(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
+  return res;
+}
+function matrixCalc(){
+  const Araw = parseNumberList(document.getElementById('mA').value);
+  const Brow = parseNumberList(document.getElementById('mB').value);
+  const op = document.getElementById('mOp').value;
+  const e=document.getElementById('mError'), o=document.getElementById('mResult');
+  e.innerText=''; o.innerText='Result: -';
+  const MA = parseMatrix(Araw);
+  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
+  if(op==='det'){
+    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
+    o.innerText = 'Determinant: ' + d;
+    return;
+  }
+  if(op==='inv'){
+    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
+    // 3x3 inverse (use adjugate / det)
+    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+    // compute cofactor matrix then transpose and divide by det
+    const m=MA.mat;
+    const cof = [
+      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
+      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
+      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
+    ];
+    const adj = transpose(cof);
+    const inv = adj.map(row => row.map(v=>v/d));
+    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+    return;
+  }
+  // operations requiring B:
+  const MB = parseMatrix(Brow);
+  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
+  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
+  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
+  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
+}
+
+/* ========== AGE ========== */
+function ageCalc(){
+  const b=document.getElementById('birth').value;
+  const ref=document.getElementById('refdate').value;
+  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(!b){ e.innerText='Select birthdate'; return; }
+  const birth = new Date(b);
+  const now = ref ? new Date(ref) : new Date();
+  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
+  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
+  let y = now.getFullYear() - birth.getFullYear();
+  let m = now.getMonth() - birth.getMonth();
+  let d = now.getDate() - birth.getDate();
+  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
+  if(m<0){ y-=1; m+=12; }
+  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
+}
+
+/* ========== UTILITY: RESET PANEL ========== */
+function resetPanel(id){
+  const panel = document.getElementById(id);
+  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
+  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
+  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
+  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
+}
+
+/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter'){
+    const active = document.querySelector('.panel.active');
+    if(!active) return;
+    const id = active.id;
+    // map Enter to calculation function per panel:
+    if(id==='basic') basicCalculate();
+    if(id==='scientific') scientificCalculate();
+    if(id==='programmer') programmerCalc();
+    if(id==='finance') financeCalc();
+    if(id==='loan') loanCalculate();
+    if(id==='percentage') percentageCalc();
+    if(id==='bmi') bmiCalculate();
+    if(id==='unit') unitConvert();
+    if(id==='statistics') statsCalculate();
+    if(id==='gcdlcm') calcGcdLcm();
+    if(id==='matrix') matrixCalc();
+    if(id==='age') ageCalc();
+  }
+});
+
+/* ========== INITIAL RENDER ========= */
+renderBasicHistory();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Smart Multi Calculator — Full</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --text:#111; --card:#fff;
+      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
+      --error:#d9534f;
+    }
+    [data-theme="dark"]{
+      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
+      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
+    header h1{font-size:1.05rem;margin:0}
+    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+    main{max-width:980px;margin:18px auto;padding:0 16px}
+    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
+    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
+    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    .panel.active{display:block}
+    h2{margin:0 0 10px 0;color:var(--accent-2)}
+    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
+    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
+    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
+    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
+    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+    @media (max-width:420px){.row{flex-direction:column}}
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <h1>Smart Multi Calculator (Full)</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
     </div>
-  </div>
+  </header>
 
-  <script>
-    let memory = null;
-    let history = [];
+  <main>
+    <!-- MAIN MENU -->
+    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
+      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
+        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
+        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
+        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
+        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
+        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
+        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
+        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
+        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
+      </div>
+    </section>
 
-    function toggleTheme(){
-      const body = document.body;
-      body.dataset.theme = (body.dataset.theme === "light") ? "dark" : "light";
-    }
-    function openCalc(id){
-      document.getElementById("mainMenu").style.display="none";
-      document.querySelectorAll(".calculator").forEach(c=>c.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
-    function goBack(){
-      document.getElementById("mainMenu").style.display="grid";
-      document.querySelectorAll(".calculator").forEach(c=>c.classList.remove("active"));
-    }
+    <!-- PANELS -->
+    <!-- Basic -->
+    <section id="basic" class="panel" aria-hidden="true">
+      <h2>Basic Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
+        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
+      </div>
+      <label for="b_op">Operation</label>
+      <select id="b_op" aria-label="operation">
+        <option value="add">+</option>
+        <option value="sub">−</option>
+        <option value="mul">×</option>
+        <option value="div">÷</option>
+      </select>
 
-    function calculateBasic(){
-      let n1=parseFloat(document.getElementById("num1").value);
-      let n2=parseFloat(document.getElementById("num2").value);
-      let op=document.getElementById("operation").value;
-      if(isNaN(n1)||isNaN(n2)){alert("Enter numbers!");return;}
-      let res;
-      if(op==="add") res=n1+n2;
-      else if(op==="sub") res=n1-n2;
-      else if(op==="mul") res=n1*n2;
-      else if(op==="div") res=n2!==0?n1/n2:"Error";
-      document.getElementById("basicResult").innerText="Result: "+res;
-      history.push(`${n1} ${op} ${n2} = ${res}`);
-      renderHistory();
-    }
-    function clearBasic(){
-      document.getElementById("num1").value="";
-      document.getElementById("num2").value="";
-      document.getElementById("basicResult").innerText="Result: -";
-    }
-    function renderHistory(){
-      let h=document.getElementById("basicHistory");
-      h.innerHTML=history.slice(-10).map(x=>"<div>"+x+"</div>").join("");
-    }
-    function memoryAdd(){
-      let res=document.getElementById("basicResult").innerText.replace("Result: ","");
-      if(res!=="-") memory=parseFloat(res);
-    }
-    function memoryRecall(){
-      if(memory!==null) document.getElementById("num1").value=memory;
-    }
-    function memoryClear(){memory=null;}
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="basicCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="basicClear()">Clear</button>
+        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
+        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
+        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
+      </div>
 
-    function calculateScientific(){
-      try{
-        let expr=document.getElementById("sciInput").value;
-        let replaced=expr.replace(/sin/gi,"Math.sin")
-                         .replace(/cos/gi,"Math.cos")
-                         .replace(/tan/gi,"Math.tan")
-                         .replace(/log/gi,"Math.log10")
-                         .replace(/ln/gi,"Math.log")
-                         .replace(/sqrt/gi,"Math.sqrt")
-                         .replace(/pi/gi,"Math.PI")
-                         .replace(/exp/gi,"Math.exp")
-                         .replace(/\^/g,"**");
-        let res=eval(replaced);
-        document.getElementById("sciResult").innerText="Result: "+res;
-      }catch(e){alert("Invalid expression");}
-    }
+      <div id="basicError" class="error" role="status" aria-live="polite"></div>
+      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
 
-    function calculateFinance(){
-      let p=parseFloat(document.getElementById("principal").value);
-      let r=parseFloat(document.getElementById("rate").value)/100;
-      let t=parseFloat(document.getElementById("time").value);
-      let type=document.getElementById("financeType").value;
-      if(isNaN(p)||isNaN(r)||isNaN(t)){alert("Fill all fields");return;}
-      let res;
-      if(type==="simple") res=p+(p*r*t);
-      else res=p*Math.pow(1+r,t);
-      document.getElementById("financeResult").innerText="Result: "+res.toFixed(2);
-    }
+      <div class="small" style="margin-top:8px">History (last 20):</div>
+      <div id="basicHistory" class="history-box" aria-live="polite"></div>
 
-    function calculateStats(){
-      let arr=document.getElementById("statsInput").value.split(",").map(Number);
-      arr=arr.filter(x=>!isNaN(x));
-      if(arr.length===0){alert("Enter numbers!");return;}
-      let mean=arr.reduce((a,b)=>a+b,0)/arr.length;
-      let sorted=[...arr].sort((a,b)=>a-b);
-      let median=sorted.length%2?sorted[Math.floor(sorted.length/2)]
-        :(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
-      let variance=arr.reduce((a,b)=>a+(b-mean)**2,0)/arr.length;
-      let std=Math.sqrt(variance);
-      let mode = arr.sort((a,b)=>
-        arr.filter(v=>v===a).length-arr.filter(v=>v===b).length).pop();
-      let range=sorted[sorted.length-1]-sorted[0];
-      document.getElementById("statsResult").innerText=
-        `Mean: ${mean}, Median: ${median}, Mode: ${mode}, Variance: ${variance.toFixed(2)}, StdDev: ${std.toFixed(2)}, Range: ${range}`;
-    }
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
 
-    function calculateDate(){
-      let d1=new Date(document.getElementById("date1").value);
-      let d2=new Date(document.getElementById("date2").value);
-      if(isNaN(d1)||isNaN(d2)){alert("Select both dates");return;}
-      let diff=Math.abs(d2-d1)/(1000*3600*24);
-      document.getElementById("dateResult").innerText="Difference: "+diff+" days";
+    <!-- Scientific -->
+    <section id="scientific" class="panel" aria-hidden="true">
+      <h2>Scientific Calculator</h2>
+      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
+      <label>Angle mode</label>
+      <select id="s_mode" aria-label="angle mode">
+        <option value="deg">Degrees</option>
+        <option value="rad">Radians</option>
+      </select>
+      <label for="s_expr">Expression</label>
+      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
+      </div>
+      <div id="sError" class="error"></div>
+      <div id="sResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Programmer -->
+    <section id="programmer" class="panel" aria-hidden="true">
+      <h2>Programmer Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
+        <div class="col">
+          <label for="progBase">Bitwise / convert</label>
+          <select id="progOp" aria-label="programmer op">
+            <option value="toBin">To Binary</option>
+            <option value="toHex">To Hex</option>
+            <option value="toOct">To Octal</option>
+            <option value="and">AND (with)</option>
+            <option value="or">OR (with)</option>
+            <option value="xor">XOR (with)</option>
+            <option value="shl">Shift Left (bits)</option>
+            <option value="shr">Shift Right (bits)</option>
+          </select>
+        </div>
+      </div>
+      <label for="progSecond">Second operand (for bitwise/shift)</label>
+      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="programmerCalc()">Run</button>
+        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
+      </div>
+      <div id="progError" class="error"></div>
+      <div id="progResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Finance -->
+    <section id="finance" class="panel" aria-hidden="true">
+      <h2>Financial Calculator</h2>
+      <label for="finType">Type</label>
+      <select id="finType" aria-label="finance type">
+        <option value="simple">Simple Interest</option>
+        <option value="compound">Compound Interest</option>
+      </select>
+      <label>Principal</label><input id="finP" type="number" aria-label="principal">
+      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
+      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="financeCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
+      </div>
+      <div id="finError" class="error"></div>
+      <div id="finResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Loan -->
+    <section id="loan" class="panel" aria-hidden="true">
+      <h2>Loan EMI Calculator</h2>
+      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
+      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
+      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="loanCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
+      </div>
+      <div id="loanError" class="error"></div>
+      <div id="loanResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Percentage -->
+    <section id="percentage" class="panel" aria-hidden="true">
+      <h2>Percentage Calculator</h2>
+      <label>Value</label><input id="pctValue" type="number" aria-label="value">
+      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="percentageCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
+      </div>
+      <div id="pctError" class="error"></div>
+      <div id="pctResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="panel" aria-hidden="true">
+      <h2>BMI Calculator</h2>
+      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
+      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
+      </div>
+      <div id="bmiError" class="error"></div>
+      <div id="bmiResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Unit Converter -->
+    <section id="unit" class="panel" aria-hidden="true">
+      <h2>Unit Converter</h2>
+      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
+      <label>Conversion</label>
+      <select id="unitOp" aria-label="unit op">
+        <optgroup label="Length">
+          <option value="m-km">m → km</option>
+          <option value="km-m">km → m</option>
+          <option value="m-mi">m → miles</option>
+          <option value="mi-m">miles → m</option>
+        </optgroup>
+        <optgroup label="Weight">
+          <option value="kg-lb">kg → lb</option>
+          <option value="lb-kg">lb → kg</option>
+        </optgroup>
+        <optgroup label="Temperature">
+          <option value="c-f">°C → °F</option>
+          <option value="f-c">°F → °C</option>
+          <option value="c-k">°C → K</option>
+        </optgroup>
+        <optgroup label="Volume">
+          <option value="l-ml">L → mL</option>
+          <option value="ml-l">mL → L</option>
+        </optgroup>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="unitConvert()">Convert</button>
+        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
+      </div>
+      <div id="unitError" class="error"></div>
+      <div id="unitResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Statistics -->
+    <section id="statistics" class="panel" aria-hidden="true">
+      <h2>Statistics</h2>
+      <label>Numbers (comma separated)</label>
+      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="statsCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
+      </div>
+      <div id="statsError" class="error"></div>
+      <div id="statsResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- GCD / LCM -->
+    <section id="gcdlcm" class="panel" aria-hidden="true">
+      <h2>GCD & LCM</h2>
+      <label>Numbers (comma separated, integers)</label>
+      <input id="gNums" aria-label="gcd numbers">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
+      </div>
+      <div id="gError" class="error"></div>
+      <div id="gResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Matrix (2x2 & 3x3) -->
+    <section id="matrix" class="panel" aria-hidden="true">
+      <h2>Matrix (2x2 / 3x3)</h2>
+      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
+      <label>Matrix A (comma separated)</label>
+      <input id="mA" aria-label="matrix A">
+      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
+      <input id="mB" aria-label="matrix B">
+      <label>Operation</label>
+      <select id="mOp" aria-label="matrix op">
+        <option value="det">Determinant (A)</option>
+        <option value="inv">Inverse (A)</option>
+        <option value="add">A + B</option>
+        <option value="mul">A × B</option>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="matrixCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
+      </div>
+      <div id="mError" class="error"></div>
+      <div id="mResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Age -->
+    <section id="age" class="panel" aria-hidden="true">
+      <h2>Age Calculator</h2>
+      <label>Birthdate</label>
+      <input id="birth" type="date" aria-label="birthdate">
+      <label>Reference date (optional — leave blank = today)</label>
+      <input id="refdate" type="date" aria-label="reference date">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
+        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
+      </div>
+      <div id="ageError" class="error"></div>
+      <div id="ageResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <footer>© Smart Multi Calculator — offline build</footer>
+  </main>
+
+<script>
+/* ========== THEME ========== */
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.getElementById('themeBtn');
+  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
+  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
+}
+
+/* ========== NAV ========== */
+function openPanel(id){
+  document.getElementById('menuGrid').style.display='none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById(id);
+  panel.classList.add('active');
+  panel.style.display='block';
+  panel.setAttribute('aria-hidden','false');
+  // fix: ensure text color on menu cards (handled by CSS variables)
+}
+function goHome(){
+  document.getElementById('menuGrid').style.display='grid';
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
+  });
+}
+
+/* ========== UTILS ========== */
+function parseNumberList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
+}
+function isInt(n){ return Number.isInteger(n); }
+
+/* ========== BASIC (history + memory) ========== */
+let basicMemory = null;
+let basicHistory = [];
+function basicCalculate(){
+  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
+  const op=document.getElementById('b_op').value;
+  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
+  error.innerText=''; out.innerText='Result: -';
+  const x=parseFloat(a), y=parseFloat(b);
+  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
+  let r;
+  if(op==='add') r=x+y;
+  if(op==='sub') r=x-y;
+  if(op==='mul') r=x*y;
+  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
+  out.innerText='Result: '+r;
+  basicHistory.push(`${x} ${op} ${y} = ${r}`);
+  if(basicHistory.length>20) basicHistory.shift();
+  renderBasicHistory();
+}
+function renderBasicHistory(){
+  const box=document.getElementById('basicHistory');
+  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
+}
+function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
+function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
+function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
+function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
+
+/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
+function scientificCalculate(){
+  const expr=document.getElementById('s_expr').value;
+  const mode=document.getElementById('s_mode').value;
+  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
+  err.innerText=''; resEl.innerText='Result: -';
+  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
+  try{
+    // Map functions to Math.* and handle ^ as **
+    let e=expr.replace(/√/g,'sqrt');
+    e=e.replace(/\^/g,'**');
+    // safe replacements (case-insensitive)
+    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
+      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
+      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
+      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
+      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
+      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
+      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
+      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
+      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
+      .replace(/(?<![\w.])e\b/gi,'Math.E');
+    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
+    if(mode==='deg'){
+      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
+      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
+      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
     }
-  </script>
+    // allow Math.log10 helper
+    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
+    // Evaluate (note: works offline; user input only)
+    const value = eval(e);
+    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
+    else resEl.innerText = 'Result: ' + value;
+  }catch(errCatch){
+    err.innerText = 'Invalid expression';
+  }
+}
+
+/* ========== PROGRAMMER (base & bitwise) ========== */
+function programmerCalc(){
+  const n = parseInt(document.getElementById('progInput').value);
+  const op = document.getElementById('progOp').value;
+  const sec = parseInt(document.getElementById('progSecond').value);
+  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
+  err.innerText=''; out.innerText='Result: -';
+  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
+  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
+  try{
+    let r;
+    if(op==='toBin') r = n.toString(2);
+    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
+    if(op==='toOct') r = n.toString(8);
+    if(op==='and') r = (n & sec);
+    if(op==='or') r = (n | sec);
+    if(op==='xor') r = (n ^ sec);
+    if(op==='shl') r = (n << sec);
+    if(op==='shr') r = (n >> sec);
+    out.innerText = 'Result: '+ r;
+  }catch(e){ err.innerText='Error computing'; }
+}
+
+/* ========== FINANCE ========== */
+function financeCalc(){
+  const type=document.getElementById('finType').value;
+  const P=parseFloat(document.getElementById('finP').value);
+  const R=parseFloat(document.getElementById('finR').value)/100;
+  const T=parseFloat(document.getElementById('finT').value);
+  const e=document.getElementById('finError'), o=document.getElementById('finResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
+  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
+  o.innerText='Result: '+ amount.toFixed(2);
+}
+
+/* ========== LOAN ========== */
+function loanCalculate(){
+  const P=parseFloat(document.getElementById('loanP').value);
+  const annual=parseFloat(document.getElementById('loanR').value);
+  const years=parseFloat(document.getElementById('loanT').value);
+  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
+  const r = annual/100/12; const n = years*12;
+  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
+}
+
+/* ========== PERCENTAGE ========== */
+function percentageCalc(){
+  const v = parseFloat(document.getElementById('pctValue').value);
+  const t = parseFloat(document.getElementById('pctTotal').value);
+  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter a value'; return; }
+  if(isNaN(t) || t===0){
+    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
+    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
+    // But we can also compute percent-of as value is considered percentage? Keep simple:
+    return;
+  }
+  const percent = (v/t)*100;
+  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
+}
+
+/* ========== BMI ========== */
+function bmiCalculate(){
+  const w=parseFloat(document.getElementById('bmiW').value);
+  const h=parseFloat(document.getElementById('bmiH').value)/100;
+  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
+  const bmi = w/(h*h);
+  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
+}
+
+/* ========== UNIT CONVERTER ========== */
+function unitConvert(){
+  const v=parseFloat(document.getElementById('unitV').value);
+  const op=document.getElementById('unitOp').value;
+  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter value'; return; }
+  let res;
+  switch(op){
+    case 'm-km': res = (v/1000) + ' km'; break;
+    case 'km-m': res = (v*1000) + ' m'; break;
+    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
+    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
+    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
+    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
+    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
+    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
+    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
+    case 'l-ml': res = (v*1000)+' mL'; break;
+    case 'ml-l': res = (v/1000)+' L'; break;
+    default: res = 'Unsupported op'; break;
+  }
+  o.innerText = 'Result: '+res;
+}
+
+/* ========== STATISTICS ========== */
+function statsCalculate(){
+  const raw = document.getElementById('statsIn').value;
+  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
+  e.innerText=''; o.innerText='Result: -';
+  const arr = parseNumberList(raw);
+  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
+  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+  const sorted = arr.slice().sort((a,b)=>a-b);
+  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
+  const maxF = Math.max(...Object.values(freq));
+  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
+  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+  const sd = Math.sqrt(variance);
+  const range = sorted[sorted.length-1] - sorted[0];
+  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
+}
+
+/* ========== GCD & LCM ========== */
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
+function calcGcdLcm(){
+  const raw = document.getElementById('gNums').value;
+  const arr = parseNumberList(raw).map(Math.trunc);
+  const e=document.getElementById('gError'), o=document.getElementById('gResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
+  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
+  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
+  o.innerText = `GCD: ${g}, LCM: ${L}`;
+}
+
+/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
+function parseMatrix(arr){
+  // returns {n:2 or 3, mat:[[...]]} or null
+  const len=arr.length;
+  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
+  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
+  return null;
+}
+function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function inverse2(m){
+  const d = det2(m); if(d===0) return null;
+  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
+  return inv;
+}
+function transpose(m){
+  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
+  return res;
+}
+function multiply(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
+  return res;
+}
+function addMatrix(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
+  return res;
+}
+function matrixCalc(){
+  const Araw = parseNumberList(document.getElementById('mA').value);
+  const Brow = parseNumberList(document.getElementById('mB').value);
+  const op = document.getElementById('mOp').value;
+  const e=document.getElementById('mError'), o=document.getElementById('mResult');
+  e.innerText=''; o.innerText='Result: -';
+  const MA = parseMatrix(Araw);
+  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
+  if(op==='det'){
+    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
+    o.innerText = 'Determinant: ' + d;
+    return;
+  }
+  if(op==='inv'){
+    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
+    // 3x3 inverse (use adjugate / det)
+    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+    // compute cofactor matrix then transpose and divide by det
+    const m=MA.mat;
+    const cof = [
+      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
+      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
+      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
+    ];
+    const adj = transpose(cof);
+    const inv = adj.map(row => row.map(v=>v/d));
+    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+    return;
+  }
+  // operations requiring B:
+  const MB = parseMatrix(Brow);
+  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
+  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
+  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
+  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
+}
+
+/* ========== AGE ========== */
+function ageCalc(){
+  const b=document.getElementById('birth').value;
+  const ref=document.getElementById('refdate').value;
+  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(!b){ e.innerText='Select birthdate'; return; }
+  const birth = new Date(b);
+  const now = ref ? new Date(ref) : new Date();
+  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
+  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
+  let y = now.getFullYear() - birth.getFullYear();
+  let m = now.getMonth() - birth.getMonth();
+  let d = now.getDate() - birth.getDate();
+  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
+  if(m<0){ y-=1; m+=12; }
+  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
+}
+
+/* ========== UTILITY: RESET PANEL ========== */
+function resetPanel(id){
+  const panel = document.getElementById(id);
+  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
+  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
+  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
+  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
+}
+
+/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter'){
+    const active = document.querySelector('.panel.active');
+    if(!active) return;
+    const id = active.id;
+    // map Enter to calculation function per panel:
+    if(id==='basic') basicCalculate();
+    if(id==='scientific') scientificCalculate();
+    if(id==='programmer') programmerCalc();
+    if(id==='finance') financeCalc();
+    if(id==='loan') loanCalculate();
+    if(id==='percentage') percentageCalc();
+    if(id==='bmi') bmiCalculate();
+    if(id==='unit') unitConvert();
+    if(id==='statistics') statsCalculate();
+    if(id==='gcdlcm') calcGcdLcm();
+    if(id==='matrix') matrixCalc();
+    if(id==='age') ageCalc();
+  }
+});
+
+/* ========== INITIAL RENDER ========= */
+renderBasicHistory();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Smart Multi Calculator — Full</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --text:#111; --card:#fff;
+      --accent:#0b79d0; --accent-2:#095ea6; --muted:#666;
+      --error:#d9534f;
+    }
+    [data-theme="dark"]{
+      --bg:#0b0f14; --text:#e6eef6; --card:#12161a;
+      --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
+    header h1{font-size:1.05rem;margin:0}
+    .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+    main{max-width:980px;margin:18px auto;padding:0 16px}
+    .grid-menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+    .menu-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(2,6,23,0.08)}
+    .menu-card .icon{font-size:22px;display:block;margin-bottom:8px}
+    .panel{display:none;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    .panel.active{display:block}
+    h2{margin:0 0 10px 0;color:var(--accent-2)}
+    label{display:block;font-size:0.9rem;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text)}
+    button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
+    button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
+    .error{color:var(--error);font-size:0.9rem;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
+    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
+    @media (max-width:420px){.row{flex-direction:column}}
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <h1>Smart Multi Calculator (Full)</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- MAIN MENU -->
+    <section id="menuGrid" class="grid-menu" aria-label="Main menu">
+      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
+        <div class="icon">🧮</div><div>Basic</div><div class="small">+ - × ÷, memory & history</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">sin, cos, tan, log, exp, pow</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
+        <div class="icon">💻</div><div>Programmer</div><div class="small">base conv, bitwise</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
+        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
+        <div class="icon">🏦</div><div>Loan</div><div class="small">monthly EMI</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
+        <div class="icon">📊</div><div>Percentage</div><div class="small">% of / increase / decrease</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp, volume</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
+        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">greatest/greatest</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
+        <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3 ops</div>
+      </div>
+      <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
+        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">years, months, days</div>
+      </div>
+    </section>
+
+    <!-- PANELS -->
+    <!-- Basic -->
+    <section id="basic" class="panel" aria-hidden="true">
+      <h2>Basic Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="b_a">First number</label><input id="b_a" type="number" aria-label="first number"></div>
+        <div class="col"><label for="b_b">Second number</label><input id="b_b" type="number" aria-label="second number"></div>
+      </div>
+      <label for="b_op">Operation</label>
+      <select id="b_op" aria-label="operation">
+        <option value="add">+</option>
+        <option value="sub">−</option>
+        <option value="mul">×</option>
+        <option value="div">÷</option>
+      </select>
+
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="basicCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="basicClear()">Clear</button>
+        <button class="btn ghost" onclick="basicMemoryAdd()">M+</button>
+        <button class="btn ghost" onclick="basicMemoryRecall()">MR</button>
+        <button class="btn ghost" onclick="basicMemoryClear()">MC</button>
+      </div>
+
+      <div id="basicError" class="error" role="status" aria-live="polite"></div>
+      <div id="basicResult" class="result" aria-live="polite">Result: -</div>
+
+      <div class="small" style="margin-top:8px">History (last 20):</div>
+      <div id="basicHistory" class="history-box" aria-live="polite"></div>
+
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Scientific -->
+    <section id="scientific" class="panel" aria-hidden="true">
+      <h2>Scientific Calculator</h2>
+      <div class="small">Use common functions: sin(x), cos(x), tan(x), log(x), ln(x), sqrt(x), ^ for power. Angle in degrees by default.</div>
+      <label>Angle mode</label>
+      <select id="s_mode" aria-label="angle mode">
+        <option value="deg">Degrees</option>
+        <option value="rad">Radians</option>
+      </select>
+      <label for="s_expr">Expression</label>
+      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log(100) or 2^3 + sqrt(16)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="scientificCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('scientific')">Reset</button>
+      </div>
+      <div id="sError" class="error"></div>
+      <div id="sResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Programmer -->
+    <section id="programmer" class="panel" aria-hidden="true">
+      <h2>Programmer Calculator</h2>
+      <div class="row">
+        <div class="col"><label for="progInput">Number (decimal)</label><input id="progInput" type="number" aria-label="programmer input"></div>
+        <div class="col">
+          <label for="progBase">Bitwise / convert</label>
+          <select id="progOp" aria-label="programmer op">
+            <option value="toBin">To Binary</option>
+            <option value="toHex">To Hex</option>
+            <option value="toOct">To Octal</option>
+            <option value="and">AND (with)</option>
+            <option value="or">OR (with)</option>
+            <option value="xor">XOR (with)</option>
+            <option value="shl">Shift Left (bits)</option>
+            <option value="shr">Shift Right (bits)</option>
+          </select>
+        </div>
+      </div>
+      <label for="progSecond">Second operand (for bitwise/shift)</label>
+      <input id="progSecond" type="number" aria-label="second operand" placeholder="e.g. 5">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="programmerCalc()">Run</button>
+        <button class="btn ghost" onclick="resetPanel('programmer')">Reset</button>
+      </div>
+      <div id="progError" class="error"></div>
+      <div id="progResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Finance -->
+    <section id="finance" class="panel" aria-hidden="true">
+      <h2>Financial Calculator</h2>
+      <label for="finType">Type</label>
+      <select id="finType" aria-label="finance type">
+        <option value="simple">Simple Interest</option>
+        <option value="compound">Compound Interest</option>
+      </select>
+      <label>Principal</label><input id="finP" type="number" aria-label="principal">
+      <label>Rate (%) per year</label><input id="finR" type="number" aria-label="rate percent">
+      <label>Time (years)</label><input id="finT" type="number" aria-label="time years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="financeCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('finance')">Reset</button>
+      </div>
+      <div id="finError" class="error"></div>
+      <div id="finResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Loan -->
+    <section id="loan" class="panel" aria-hidden="true">
+      <h2>Loan EMI Calculator</h2>
+      <label>Loan amount</label><input id="loanP" type="number" aria-label="loan amount">
+      <label>Annual interest (%)</label><input id="loanR" type="number" aria-label="loan rate">
+      <label>Tenor (years)</label><input id="loanT" type="number" aria-label="loan years">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="loanCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('loan')">Reset</button>
+      </div>
+      <div id="loanError" class="error"></div>
+      <div id="loanResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Percentage -->
+    <section id="percentage" class="panel" aria-hidden="true">
+      <h2>Percentage Calculator</h2>
+      <label>Value</label><input id="pctValue" type="number" aria-label="value">
+      <label>Total (for percent of) — if empty, percent of value is used</label><input id="pctTotal" type="number" aria-label="total (optional)">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="percentageCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('percentage')">Reset</button>
+      </div>
+      <div id="pctError" class="error"></div>
+      <div id="pctResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi" class="panel" aria-hidden="true">
+      <h2>BMI Calculator</h2>
+      <label>Weight (kg)</label><input id="bmiW" type="number" aria-label="weight kg">
+      <label>Height (cm)</label><input id="bmiH" type="number" aria-label="height cm">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="bmiCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('bmi')">Reset</button>
+      </div>
+      <div id="bmiError" class="error"></div>
+      <div id="bmiResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Unit Converter -->
+    <section id="unit" class="panel" aria-hidden="true">
+      <h2>Unit Converter</h2>
+      <label>Value</label><input id="unitV" type="number" aria-label="unit value">
+      <label>Conversion</label>
+      <select id="unitOp" aria-label="unit op">
+        <optgroup label="Length">
+          <option value="m-km">m → km</option>
+          <option value="km-m">km → m</option>
+          <option value="m-mi">m → miles</option>
+          <option value="mi-m">miles → m</option>
+        </optgroup>
+        <optgroup label="Weight">
+          <option value="kg-lb">kg → lb</option>
+          <option value="lb-kg">lb → kg</option>
+        </optgroup>
+        <optgroup label="Temperature">
+          <option value="c-f">°C → °F</option>
+          <option value="f-c">°F → °C</option>
+          <option value="c-k">°C → K</option>
+        </optgroup>
+        <optgroup label="Volume">
+          <option value="l-ml">L → mL</option>
+          <option value="ml-l">mL → L</option>
+        </optgroup>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="unitConvert()">Convert</button>
+        <button class="btn ghost" onclick="resetPanel('unit')">Reset</button>
+      </div>
+      <div id="unitError" class="error"></div>
+      <div id="unitResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Statistics -->
+    <section id="statistics" class="panel" aria-hidden="true">
+      <h2>Statistics</h2>
+      <label>Numbers (comma separated)</label>
+      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="statsCalculate()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('statistics')">Reset</button>
+      </div>
+      <div id="statsError" class="error"></div>
+      <div id="statsResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- GCD / LCM -->
+    <section id="gcdlcm" class="panel" aria-hidden="true">
+      <h2>GCD & LCM</h2>
+      <label>Numbers (comma separated, integers)</label>
+      <input id="gNums" aria-label="gcd numbers">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="calcGcdLcm()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('gcdlcm')">Reset</button>
+      </div>
+      <div id="gError" class="error"></div>
+      <div id="gResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Matrix (2x2 & 3x3) -->
+    <section id="matrix" class="panel" aria-hidden="true">
+      <h2>Matrix (2x2 / 3x3)</h2>
+      <div class="small">Enter matrix elements row-wise separated by commas. For 2x2 enter 4 numbers; for 3x3 enter 9 numbers.</div>
+      <label>Matrix A (comma separated)</label>
+      <input id="mA" aria-label="matrix A">
+      <label>Matrix B (optional, comma separated) — for addition/multiplication</label>
+      <input id="mB" aria-label="matrix B">
+      <label>Operation</label>
+      <select id="mOp" aria-label="matrix op">
+        <option value="det">Determinant (A)</option>
+        <option value="inv">Inverse (A)</option>
+        <option value="add">A + B</option>
+        <option value="mul">A × B</option>
+      </select>
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="matrixCalc()">Calculate</button>
+        <button class="btn ghost" onclick="resetPanel('matrix')">Reset</button>
+      </div>
+      <div id="mError" class="error"></div>
+      <div id="mResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <!-- Age -->
+    <section id="age" class="panel" aria-hidden="true">
+      <h2>Age Calculator</h2>
+      <label>Birthdate</label>
+      <input id="birth" type="date" aria-label="birthdate">
+      <label>Reference date (optional — leave blank = today)</label>
+      <input id="refdate" type="date" aria-label="reference date">
+      <div style="margin-top:8px">
+        <button class="btn action" onclick="ageCalc()">Calculate Age</button>
+        <button class="btn ghost" onclick="resetPanel('age')">Reset</button>
+      </div>
+      <div id="ageError" class="error"></div>
+      <div id="ageResult" class="result">Result: -</div>
+      <button class="back" onclick="goHome()">← Back to Menu</button>
+    </section>
+
+    <footer>© Smart Multi Calculator — offline build</footer>
+  </main>
+
+<script>
+/* ========== THEME ========== */
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.getElementById('themeBtn');
+  if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
+  else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
+}
+
+/* ========== NAV ========== */
+function openPanel(id){
+  document.getElementById('menuGrid').style.display='none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById(id);
+  panel.classList.add('active');
+  panel.style.display='block';
+  panel.setAttribute('aria-hidden','false');
+  // fix: ensure text color on menu cards (handled by CSS variables)
+}
+function goHome(){
+  document.getElementById('menuGrid').style.display='grid';
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
+  });
+}
+
+/* ========== UTILS ========== */
+function parseNumberList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(Number).filter(n=>!isNaN(n));
+}
+function isInt(n){ return Number.isInteger(n); }
+
+/* ========== BASIC (history + memory) ========== */
+let basicMemory = null;
+let basicHistory = [];
+function basicCalculate(){
+  const a=document.getElementById('b_a').value; const b=document.getElementById('b_b').value;
+  const op=document.getElementById('b_op').value;
+  const error=document.getElementById('basicError'); const out=document.getElementById('basicResult');
+  error.innerText=''; out.innerText='Result: -';
+  const x=parseFloat(a), y=parseFloat(b);
+  if(isNaN(x)||isNaN(y)){ error.innerText='Please enter both numbers.'; return; }
+  let r;
+  if(op==='add') r=x+y;
+  if(op==='sub') r=x-y;
+  if(op==='mul') r=x*y;
+  if(op==='div'){ if(y===0){ error.innerText='Cannot divide by zero.'; return;} r=x/y; }
+  out.innerText='Result: '+r;
+  basicHistory.push(`${x} ${op} ${y} = ${r}`);
+  if(basicHistory.length>20) basicHistory.shift();
+  renderBasicHistory();
+}
+function renderBasicHistory(){
+  const box=document.getElementById('basicHistory');
+  box.innerHTML=basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
+}
+function basicClear(){ document.getElementById('b_a').value=''; document.getElementById('b_b').value=''; document.getElementById('basicResult').innerText='Result: -'; }
+function basicMemoryAdd(){ const res=document.getElementById('basicResult').innerText.replace('Result: ',''); if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save'); }
+function basicMemoryRecall(){ if(basicMemory!==null) document.getElementById('b_a').value=basicMemory; else alert('Memory empty'); }
+function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
+
+/* ========== SCIENTIFIC (simple safe eval mapping) ========== */
+function scientificCalculate(){
+  const expr=document.getElementById('s_expr').value;
+  const mode=document.getElementById('s_mode').value;
+  const err=document.getElementById('sError'); const resEl=document.getElementById('sResult');
+  err.innerText=''; resEl.innerText='Result: -';
+  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
+  try{
+    // Map functions to Math.* and handle ^ as **
+    let e=expr.replace(/√/g,'sqrt');
+    e=e.replace(/\^/g,'**');
+    // safe replacements (case-insensitive)
+    e=e.replace(/(?<![\w.])sqrt\(/gi,'Math.sqrt(')
+      .replace(/(?<![\w.])sin\(/gi,'Math.sin(')
+      .replace(/(?<![\w.])cos\(/gi,'Math.cos(')
+      .replace(/(?<![\w.])tan\(/gi,'Math.tan(')
+      .replace(/(?<![\w.])log10\(/gi,'Math.log10(')
+      .replace(/(?<![\w.])log\(/gi,'Math.log(') // natural log
+      .replace(/(?<![\w.])ln\(/gi,'Math.log(')
+      .replace(/(?<![\w.])exp\(/gi,'Math.exp(')
+      .replace(/(?<![\w.])pi\b/gi,'Math.PI')
+      .replace(/(?<![\w.])e\b/gi,'Math.E');
+    // If degrees mode, wrap sin/cos/tan arguments conversion: sin(x) -> Math.sin(x*Math.PI/180)
+    if(mode==='deg'){
+      e=e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
+      e=e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
+      e=e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
+    }
+    // allow Math.log10 helper
+    if(!window.Math.log10) Math.log10 = function(n){ return Math.log(n)/Math.LN10; };
+    // Evaluate (note: works offline; user input only)
+    const value = eval(e);
+    if(typeof value === 'number' && !isNaN(value)) resEl.innerText = 'Result: ' + value;
+    else resEl.innerText = 'Result: ' + value;
+  }catch(errCatch){
+    err.innerText = 'Invalid expression';
+  }
+}
+
+/* ========== PROGRAMMER (base & bitwise) ========== */
+function programmerCalc(){
+  const n = parseInt(document.getElementById('progInput').value);
+  const op = document.getElementById('progOp').value;
+  const sec = parseInt(document.getElementById('progSecond').value);
+  const err=document.getElementById('progError'); const out=document.getElementById('progResult');
+  err.innerText=''; out.innerText='Result: -';
+  if(isNaN(n)){ err.innerText='Enter primary integer.'; return; }
+  if(['and','or','xor','shl','shr'].includes(op) && isNaN(sec)){ err.innerText='Enter second operand for this operation.'; return; }
+  try{
+    let r;
+    if(op==='toBin') r = n.toString(2);
+    if(op==='toHex') r = '0x'+n.toString(16).toUpperCase();
+    if(op==='toOct') r = n.toString(8);
+    if(op==='and') r = (n & sec);
+    if(op==='or') r = (n | sec);
+    if(op==='xor') r = (n ^ sec);
+    if(op==='shl') r = (n << sec);
+    if(op==='shr') r = (n >> sec);
+    out.innerText = 'Result: '+ r;
+  }catch(e){ err.innerText='Error computing'; }
+}
+
+/* ========== FINANCE ========== */
+function financeCalc(){
+  const type=document.getElementById('finType').value;
+  const P=parseFloat(document.getElementById('finP').value);
+  const R=parseFloat(document.getElementById('finR').value)/100;
+  const T=parseFloat(document.getElementById('finT').value);
+  const e=document.getElementById('finError'), o=document.getElementById('finResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(R)||isNaN(T)){ e.innerText='Fill all fields'; return; }
+  let amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
+  o.innerText='Result: '+ amount.toFixed(2);
+}
+
+/* ========== LOAN ========== */
+function loanCalculate(){
+  const P=parseFloat(document.getElementById('loanP').value);
+  const annual=parseFloat(document.getElementById('loanR').value);
+  const years=parseFloat(document.getElementById('loanT').value);
+  const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(P)||isNaN(annual)||isNaN(years)){ e.innerText='Fill all fields'; return; }
+  const r = annual/100/12; const n = years*12;
+  const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  o.innerText = 'Monthly EMI: '+ M.toFixed(2);
+}
+
+/* ========== PERCENTAGE ========== */
+function percentageCalc(){
+  const v = parseFloat(document.getElementById('pctValue').value);
+  const t = parseFloat(document.getElementById('pctTotal').value);
+  const e=document.getElementById('pctError'), o=document.getElementById('pctResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter a value'; return; }
+  if(isNaN(t) || t===0){
+    // treat as percent-of: compute percent of value => if pctTotal blank, we ask for percentage instead
+    o.innerText = 'Enter total to compute percent-of, or use Percentage of design separately.';
+    // But we can also compute percent-of as value is considered percentage? Keep simple:
+    return;
+  }
+  const percent = (v/t)*100;
+  o.innerText = `Value is ${percent.toFixed(2)}% of total`;
+}
+
+/* ========== BMI ========== */
+function bmiCalculate(){
+  const w=parseFloat(document.getElementById('bmiW').value);
+  const h=parseFloat(document.getElementById('bmiH').value)/100;
+  const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(w)||isNaN(h)||h<=0){ e.innerText='Enter weight and height'; return; }
+  const bmi = w/(h*h);
+  let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+  o.innerText = `BMI: ${bmi.toFixed(2)} (${cat})`;
+}
+
+/* ========== UNIT CONVERTER ========== */
+function unitConvert(){
+  const v=parseFloat(document.getElementById('unitV').value);
+  const op=document.getElementById('unitOp').value;
+  const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(isNaN(v)){ e.innerText='Enter value'; return; }
+  let res;
+  switch(op){
+    case 'm-km': res = (v/1000) + ' km'; break;
+    case 'km-m': res = (v*1000) + ' m'; break;
+    case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
+    case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
+    case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
+    case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
+    case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
+    case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
+    case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
+    case 'l-ml': res = (v*1000)+' mL'; break;
+    case 'ml-l': res = (v/1000)+' L'; break;
+    default: res = 'Unsupported op'; break;
+  }
+  o.innerText = 'Result: '+res;
+}
+
+/* ========== STATISTICS ========== */
+function statsCalculate(){
+  const raw = document.getElementById('statsIn').value;
+  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
+  e.innerText=''; o.innerText='Result: -';
+  const arr = parseNumberList(raw);
+  if(arr.length===0){ e.innerText='Enter numbers separated by comma'; return; }
+  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+  const sorted = arr.slice().sort((a,b)=>a-b);
+  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
+  const maxF = Math.max(...Object.values(freq));
+  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
+  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+  const sd = Math.sqrt(variance);
+  const range = sorted[sorted.length-1] - sorted[0];
+  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
+}
+
+/* ========== GCD & LCM ========== */
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
+function calcGcdLcm(){
+  const raw = document.getElementById('gNums').value;
+  const arr = parseNumberList(raw).map(Math.trunc);
+  const e=document.getElementById('gError'), o=document.getElementById('gResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(arr.length===0){ e.innerText='Enter integer numbers'; return; }
+  let g = arr[0]; for(let i=1;i<arr.length;i++) g=gcd(g,arr[i]);
+  let L = arr[0]; for(let i=1;i<arr.length;i++) L=lcm(L,arr[i]);
+  o.innerText = `GCD: ${g}, LCM: ${L}`;
+}
+
+/* ========== MATRIX (2x2 & 3x3 basic ops) ========== */
+function parseMatrix(arr){
+  // returns {n:2 or 3, mat:[[...]]} or null
+  const len=arr.length;
+  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]} }
+  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]} }
+  return null;
+}
+function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+       - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+       + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function inverse2(m){
+  const d = det2(m); if(d===0) return null;
+  const inv=[[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];
+  return inv;
+}
+function transpose(m){
+  const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j];
+  return res;
+}
+function multiply(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j];
+  return res;
+}
+function addMatrix(A,B){
+  const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j];
+  return res;
+}
+function matrixCalc(){
+  const Araw = parseNumberList(document.getElementById('mA').value);
+  const Brow = parseNumberList(document.getElementById('mB').value);
+  const op = document.getElementById('mOp').value;
+  const e=document.getElementById('mError'), o=document.getElementById('mResult');
+  e.innerText=''; o.innerText='Result: -';
+  const MA = parseMatrix(Araw);
+  if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) numbers'; return; }
+  if(op==='det'){
+    const d = MA.n===2? det2(MA.mat) : det3(MA.mat);
+    o.innerText = 'Determinant: ' + d;
+    return;
+  }
+  if(op==='inv'){
+    if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
+    // 3x3 inverse (use adjugate / det)
+    const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+    // compute cofactor matrix then transpose and divide by det
+    const m=MA.mat;
+    const cof = [
+      [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
+      [-(m[0][1]*m[2][2]-m[0][2]*m[2][1]),  (m[0][0]*m[2][2]-m[0][2]*m[2][0]), -(m[0][0]*m[2][1]-m[0][1]*m[2][0]) ],
+      [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
+    ];
+    const adj = transpose(cof);
+    const inv = adj.map(row => row.map(v=>v/d));
+    o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+    return;
+  }
+  // operations requiring B:
+  const MB = parseMatrix(Brow);
+  if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
+  if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
+  if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
+  if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
+}
+
+/* ========== AGE ========== */
+function ageCalc(){
+  const b=document.getElementById('birth').value;
+  const ref=document.getElementById('refdate').value;
+  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
+  e.innerText=''; o.innerText='Result: -';
+  if(!b){ e.innerText='Select birthdate'; return; }
+  const birth = new Date(b);
+  const now = ref ? new Date(ref) : new Date();
+  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
+  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
+  let y = now.getFullYear() - birth.getFullYear();
+  let m = now.getMonth() - birth.getMonth();
+  let d = now.getDate() - birth.getDate();
+  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
+  if(m<0){ y-=1; m+=12; }
+  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
+}
+
+/* ========== UTILITY: RESET PANEL ========== */
+function resetPanel(id){
+  const panel = document.getElementById(id);
+  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
+  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
+  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
+  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
+}
+
+/* ========== KEYBOARD: allow Enter to calculate in panels ========== */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter'){
+    const active = document.querySelector('.panel.active');
+    if(!active) return;
+    const id = active.id;
+    // map Enter to calculation function per panel:
+    if(id==='basic') basicCalculate();
+    if(id==='scientific') scientificCalculate();
+    if(id==='programmer') programmerCalc();
+    if(id==='finance') financeCalc();
+    if(id==='loan') loanCalculate();
+    if(id==='percentage') percentageCalc();
+    if(id==='bmi') bmiCalculate();
+    if(id==='unit') unitConvert();
+    if(id==='statistics') statsCalculate();
+    if(id==='gcdlcm') calcGcdLcm();
+    if(id==='matrix') matrixCalc();
+    if(id==='age') ageCalc();
+  }
+});
+
+/* ========== INITIAL RENDER ========= */
+renderBasicHistory();
+</script>
 </body>
 </html>
