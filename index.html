@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Smart Multi Calculator — With Buttons</title>
+  <title>Smart Multi Calculator — Final (No Digit Buttons)</title>
   <style>
     :root{
       --bg:#f5f7fb; --text:#111; --card:#fff;
@@ -15,7 +15,7 @@
       --accent:#4da6ff; --accent-2:#1a73e8; --muted:#9aa7b2;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .25s}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);transition:all .2s}
     header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent);color:#fff}
     header h1{font-size:1.05rem;margin:0}
     .theme-btn{background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
@@ -31,28 +31,22 @@
     input,select,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:var(--text);font-size:1rem}
     button.btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
     button.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer}
-    .result{margin-top:12px;padding:12px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600}
+    .result{margin-top:8px;padding:10px;border-left:4px solid var(--accent);border-radius:6px;background:rgba(14,84,160,0.04);font-weight:600;min-height:28px}
     .error{color:var(--error);font-size:0.9rem;margin-top:6px}
     .row{display:flex;gap:10px}
     .col{flex:1}
     .history-box{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03);max-height:150px;overflow:auto;font-size:0.9rem}
     .small{font-size:0.85rem;color:var(--muted)}
     .back{display:inline-block;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer}
-    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:0.85rem}
-    .op-row{display:flex;gap:8px;margin-top:8px}
-    .op-row button{flex:1;padding:10px}
+    .op-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .op-row button{flex:0 1 22%;padding:10px;border-radius:8px}
     code{background:rgba(0,0,0,0.05);padding:2px 6px;border-radius:4px}
-    .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-    .kbd-btn{padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;font-size:1.05rem;cursor:pointer}
-    .kbd-btn.op{background:rgba(11,121,208,0.08);border-color:rgba(11,121,208,0.18)}
-    .kbd-btn.equal{background:var(--accent);color:#fff;border:none}
-    .kbd-fn{grid-column:span 2}
     @media (max-width:420px){.row{flex-direction:column}}
   </style>
 </head>
 <body data-theme="light">
   <header>
-    <h1>Smart Multi Calculator (Buttons)</h1>
+    <h1>Smart Multi Calculator — Final</h1>
     <div>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">🌙 Dark</button>
     </div>
@@ -61,258 +55,197 @@
   <main>
     <!-- MAIN MENU -->
     <section id="menuGrid" class="grid-menu" aria-label="Main menu">
-      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0" aria-pressed="false">
-        <div class="icon">🧮</div><div>Basic</div><div class="small">free expression + buttons, memory & history</div>
+      <div class="menu-card" onclick="openPanel('basic')" role="button" tabindex="0">
+        <div class="icon">🧮</div><div>Basic</div><div class="small">expression input, ops, Ans, CE</div>
       </div>
       <div class="menu-card" onclick="openPanel('scientific')" role="button" tabindex="0">
-        <div class="icon">🔬</div><div>Scientific</div><div class="small">functions + buttons</div>
+        <div class="icon">🔬</div><div>Scientific</div><div class="small">functions, angle modes</div>
       </div>
       <div class="menu-card" onclick="openPanel('programmer')" role="button" tabindex="0">
-        <div class="icon">💻</div><div>Programmer</div><div class="small">expr operands allowed</div>
+        <div class="icon">💻</div><div>Programmer</div><div class="small">bitwise, base conv</div>
       </div>
       <div class="menu-card" onclick="openPanel('finance')" role="button" tabindex="0">
-        <div class="icon">💰</div><div>Finance</div><div class="small">expr supported</div>
+        <div class="icon">💰</div><div>Finance</div><div class="small">simple & compound</div>
       </div>
       <div class="menu-card" onclick="openPanel('loan')" role="button" tabindex="0">
-        <div class="icon">🏦</div><div>Loan</div><div class="small">EMI calc</div>
+        <div class="icon">🏦</div><div>Loan</div><div class="small">EMI</div>
       </div>
       <div class="menu-card" onclick="openPanel('percentage')" role="button" tabindex="0">
-        <div class="icon">📊</div><div>Percentage</div><div class="small">% calculations</div>
+        <div class="icon">📊</div><div>Percentage</div><div class="small">of / what% / change</div>
       </div>
       <div class="menu-card" onclick="openPanel('bmi')" role="button" tabindex="0">
-        <div class="icon">⚖️</div><div>BMI</div><div class="small">expr supported</div>
+        <div class="icon">⚖️</div><div>BMI</div><div class="small">weight status</div>
       </div>
       <div class="menu-card" onclick="openPanel('unit')" role="button" tabindex="0">
-        <div class="icon">📏</div><div>Unit Converter</div><div class="small">expr supported</div>
+        <div class="icon">📏</div><div>Unit Converter</div><div class="small">length, weight, temp</div>
       </div>
       <div class="menu-card" onclick="openPanel('statistics')" role="button" tabindex="0">
-        <div class="icon">📈</div><div>Statistics</div><div class="small">expr per item</div>
+        <div class="icon">📈</div><div>Statistics</div><div class="small">mean, median, mode, sd</div>
       </div>
       <div class="menu-card" onclick="openPanel('gcdlcm')" role="button" tabindex="0">
-        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">expr per item</div>
+        <div class="icon">🔢</div><div>GCD / LCM</div><div class="small">integer list</div>
       </div>
       <div class="menu-card" onclick="openPanel('matrix')" role="button" tabindex="0">
         <div class="icon">📐</div><div>Matrix</div><div class="small">2x2 / 3x3</div>
       </div>
       <div class="menu-card" onclick="openPanel('age')" role="button" tabindex="0">
-        <div class="icon">🎂</div><div>Age Calculator</div><div class="small">date pickers</div>
+        <div class="icon">🎂</div><div>Age</div><div class="small">years, months, days</div>
       </div>
     </section>
 
     <!-- BASIC -->
     <section id="basic" class="panel" aria-hidden="true">
       <h2>Basic Calculator</h2>
-      <div class="small">Type an expression or use keypad below. Examples: <code>12+3*4</code>, <code>5^2</code>, <code>sqrt(16)</code>.</div>
+      <div class="small">Type expression (e.g. <code>12+3*4</code>). No digit buttons — use keyboard for numbers.</div>
       <label for="basicExpr">Expression</label>
-      <input id="basicExpr" type="text" aria-label="basic expression" placeholder="Enter expression or use buttons">
-      
-      <!-- keypad (calculator-like) -->
-      <div class="keypad" aria-hidden="false">
-        <button class="kbd-btn" onclick="basicAppend('7')">7</button>
-        <button class="kbd-btn" onclick="basicAppend('8')">8</button>
-        <button class="kbd-btn" onclick="basicAppend('9')">9</button>
-        <button class="kbd-btn op" onclick="basicAppend('/')">÷</button>
-
-        <button class="kbd-btn" onclick="basicAppend('4')">4</button>
-        <button class="kbd-btn" onclick="basicAppend('5')">5</button>
-        <button class="kbd-btn" onclick="basicAppend('6')">6</button>
-        <button class="kbd-btn op" onclick="basicAppend('*')">×</button>
-
-        <button class="kbd-btn" onclick="basicAppend('1')">1</button>
-        <button class="kbd-btn" onclick="basicAppend('2')">2</button>
-        <button class="kbd-btn" onclick="basicAppend('3')">3</button>
-        <button class="kbd-btn op" onclick="basicAppend('-')">−</button>
-
-        <button class="kbd-btn" onclick="basicAppend('0')">0</button>
-        <button class="kbd-btn" onclick="basicAppend('.')">.</button>
-        <button class="kbd-btn" onclick="basicAppend('**')">^</button>
-        <button class="kbd-btn op" onclick="basicAppend('+')">+</button>
-
-        <button class="kbd-btn kbd-fn" onclick="basicAppend('(')">(</button>
-        <button class="kbd-btn kbd-fn" onclick="basicAppend(')')">)</button>
-        <button class="kbd-btn kbd-fn" onclick="basicBackspace()">⌫</button>
-        <button class="kbd-btn equal" onclick="basicEval()">=</button>
-      </div>
-
-      <div style="margin-top:8px">
-        <button class="btn" onclick="basicEval()">Calculate</button>
-        <button class="ghost" onclick="basicClear()">Clear</button>
-        <button class="ghost" onclick="basicMemoryAdd()">M+</button>
-        <button class="ghost" onclick="basicMemoryRecall()">MR</button>
-        <button class="ghost" onclick="basicMemoryClear()">MC</button>
-      </div>
-
-      <div id="basicError" class="error" role="status" aria-live="polite"></div>
+      <input id="basicExpr" type="text" aria-label="basic expression" placeholder="e.g. 12+3*4">
       <div id="basicResult" class="result" aria-live="polite">Result: -</div>
-
+      <div class="op-row" role="toolbar" aria-label="operators">
+        <button onclick="basicInsertOp('+')">+</button>
+        <button onclick="basicInsertOp('-')">−</button>
+        <button onclick="basicInsertOp('*')">×</button>
+        <button onclick="basicInsertOp('/')">÷</button>
+        <button onclick="basicInsertOp('**')">^</button>
+        <button onclick="basicInsertOp('(')">(</button>
+        <button onclick="basicInsertOp(')')">)</button>
+        <button onclick="basicInsertOp('%')">%</button>
+        <button onclick="basicToggleSign()">±</button>
+        <button onclick="basicUseAns()">Ans</button>
+        <button onclick="basicCE()">CE</button>
+      </div>
+      <button class="btn" onclick="basicEvaluate()">Calculate</button>
+      <div id="basicError" class="error" aria-live="polite"></div>
       <div class="small" style="margin-top:8px">History (last 20):</div>
       <div id="basicHistory" class="history-box" aria-live="polite"></div>
-
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
     <!-- SCIENTIFIC -->
     <section id="scientific" class="panel" aria-hidden="true">
       <h2>Scientific Calculator</h2>
-      <div class="small">Functions & keypad. Use <code>sin(30)</code>, <code>log(10)</code>, <code>sqrt(16)</code>. Angle default: degrees.</div>
+      <div class="small">Functions available: sin, cos, tan, ln, log10, sqrt, exp. Angle mode below.</div>
       <label>Angle mode</label>
       <select id="s_mode" aria-label="angle mode">
         <option value="deg">Degrees</option>
         <option value="rad">Radians</option>
       </select>
-      <label for="s_expr">Expression</label>
-      <input id="s_expr" type="text" aria-label="scientific expression" placeholder="Use functions or keypad">
-      
-      <!-- scientific keypad -->
-      <div class="keypad" style="margin-top:10px">
-        <button class="kbd-btn" onclick="sciAppend('7')">7</button>
-        <button class="kbd-btn" onclick="sciAppend('8')">8</button>
-        <button class="kbd-btn" onclick="sciAppend('9')">9</button>
-        <button class="kbd-btn op" onclick="sciAppend('/')">÷</button>
-
-        <button class="kbd-btn" onclick="sciAppend('4')">4</button>
-        <button class="kbd-btn" onclick="sciAppend('5')">5</button>
-        <button class="kbd-btn" onclick="sciAppend('6')">6</button>
-        <button class="kbd-btn op" onclick="sciAppend('*')">×</button>
-
-        <button class="kbd-btn" onclick="sciAppend('1')">1</button>
-        <button class="kbd-btn" onclick="sciAppend('2')">2</button>
-        <button class="kbd-btn" onclick="sciAppend('3')">3</button>
-        <button class="kbd-btn op" onclick="sciAppend('-')">−</button>
-
-        <button class="kbd-btn" onclick="sciAppend('0')">0</button>
-        <button class="kbd-btn" onclick="sciAppend('.')">.</button>
-        <button class="kbd-btn" onclick="sciAppend('**')">^</button>
-        <button class="kbd-btn op" onclick="sciAppend('+')">+</button>
-
-        <button class="kbd-btn" onclick="sciAppend('(')">(</button>
-        <button class="kbd-btn" onclick="sciAppend(')')">)</button>
-        <button class="kbd-btn" onclick="sciAppend('Math.PI')">π</button>
-        <button class="kbd-btn" onclick="sciAppend('Math.E')">e</button>
-
-        <button class="kbd-btn" onclick="sciAppend('sin(')">sin</button>
-        <button class="kbd-btn" onclick="sciAppend('cos(')">cos</button>
-        <button class="kbd-btn" onclick="sciAppend('tan(')">tan</button>
-        <button class="kbd-btn" onclick="sciAppend('sqrt(')">sqrt</button>
-
-        <button class="kbd-btn" onclick="sciAppend('log(')">ln</button>
-        <button class="kbd-btn" onclick="sciAppend('Math.log10(')">log10</button>
-        <button class="kbd-btn" onclick="sciAppend('exp(')">exp</button>
-        <button class="kbd-btn equal" onclick="scientificCalculate()">=</button>
+      <label for="sExpr">Expression</label>
+      <input id="sExpr" type="text" aria-label="scientific expression" placeholder="e.g. sin(30)+log10(100)">
+      <div id="sResult" class="result" aria-live="polite">Result: -</div>
+      <div class="op-row" role="toolbar" aria-label="scientific-ops">
+        <button onclick="sciInsert('Math.sin(')">sin(</button>
+        <button onclick="sciInsert('Math.cos(')">cos(</button>
+        <button onclick="sciInsert('Math.tan(')">tan(</button>
+        <button onclick="sciInsert('Math.log(')">ln(</button>
+        <button onclick="sciInsert('Math.log10(')">log10(</button>
+        <button onclick="sciInsert('Math.sqrt(')">sqrt(</button>
+        <button onclick="sciInsert('Math.exp(')">exp(</button>
+        <button onclick="sciInsert('**')">^</button>
+        <button onclick="sciInsert('(')">(</button>
+        <button onclick="sciInsert(')')">)</button>
+        <button onclick="sciUseAns()">Ans</button>
+        <button onclick="sciCE()">CE</button>
       </div>
-
-      <div style="margin-top:8px">
-        <button class="btn" onclick="scientificCalculate()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('scientific')">Reset</button>
-      </div>
-      <div id="sError" class="error"></div>
-      <div id="sResult" class="result">Result: -</div>
+      <button class="btn" onclick="scientificEvaluate()">Calculate</button>
+      <div id="sError" class="error" aria-live="polite"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Programmer -->
+    <!-- PROGRAMMER -->
     <section id="programmer" class="panel" aria-hidden="true">
       <h2>Programmer Calculator</h2>
-      <div class="small">Expressions allowed for operands. Use keypad in Basic/Scientific to compose expressions then copy here if needed.</div>
-      <div class="row">
-        <div class="col"><label for="progInput">Number (decimal or expression)</label><input id="progInput" type="text" aria-label="programmer input" placeholder="e.g. 15 or 8+7"></div>
-        <div class="col">
-          <label for="progOp">Operation</label>
-          <select id="progOp" aria-label="programmer op">
-            <option value="toBin">To Binary</option>
-            <option value="toHex">To Hex</option>
-            <option value="toOct">To Octal</option>
-            <option value="and">AND (with)</option>
-            <option value="or">OR (with)</option>
-            <option value="xor">XOR (with)</option>
-            <option value="shl">Shift Left (bits)</option>
-            <option value="shr">Shift Right (bits)</option>
-          </select>
-        </div>
-      </div>
-      <label for="progSecond">Second operand (expr) — for bitwise/shift</label>
-      <input id="progSecond" type="text" aria-label="second operand" placeholder="e.g. 5 or 4+1">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="programmerCalc()">Run</button>
-        <button class="ghost" onclick="resetPanel('programmer')">Reset</button>
-      </div>
-      <div id="progError" class="error"></div>
+      <div class="small">Operands accept expressions. Bitwise ops & conversions.</div>
+      <label>Primary (expression)</label>
+      <input id="progA" type="text" placeholder="e.g. 42 or 4+2">
+      <label>Operation</label>
+      <select id="progOp">
+        <option value="toBin">To Binary</option>
+        <option value="toHex">To Hex</option>
+        <option value="toOct">To Octal</option>
+        <option value="and">AND</option>
+        <option value="or">OR</option>
+        <option value="xor">XOR</option>
+        <option value="shl">Shift Left</option>
+        <option value="shr">Shift Right</option>
+      </select>
+      <label>Second operand (expression, for bitwise/shift)</label>
+      <input id="progB" type="text" placeholder="e.g. 3">
       <div id="progResult" class="result">Result: -</div>
+      <div class="op-row">
+        <button onclick="progUseAns()">Ans</button>
+        <button onclick="progCE()">CE</button>
+      </div>
+      <button class="btn" onclick="programmerEvaluate()">Calculate</button>
+      <div id="progError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Finance -->
+    <!-- FINANCE -->
     <section id="finance" class="panel" aria-hidden="true">
       <h2>Financial Calculator</h2>
-      <label for="finType">Type</label>
-      <select id="finType" aria-label="finance type">
-        <option value="simple">Simple Interest</option>
-        <option value="compound">Compound Interest</option>
-      </select>
-      <label>Principal (expression allowed)</label><input id="finP" type="text" aria-label="principal" placeholder="e.g. 1000*1.1">
-      <label>Rate (%) per year (expression allowed)</label><input id="finR" type="text" aria-label="rate percent" placeholder="e.g. 5 or 2+3">
-      <label>Time (years) (expression allowed)</label><input id="finT" type="text" aria-label="time years" placeholder="e.g. 2 or 1+1">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="financeCalc()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('finance')">Reset</button>
-      </div>
-      <div id="finError" class="error"></div>
+      <label>Type</label>
+      <select id="finType"><option value="simple">Simple</option><option value="compound">Compound</option></select>
+      <label>Principal (expression)</label><input id="finP" type="text" placeholder="e.g. 1000*1.05">
+      <label>Rate % per year (expression)</label><input id="finR" type="text" placeholder="e.g. 5">
+      <label>Time (years) (expression)</label><input id="finT" type="text" placeholder="e.g. 2">
       <div id="finResult" class="result">Result: -</div>
+      <div class="op-row">
+        <button onclick="finUseAns()">Ans</button>
+        <button onclick="finCE()">CE</button>
+      </div>
+      <button class="btn" onclick="financeEvaluate()">Calculate</button>
+      <div id="finError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Loan -->
+    <!-- LOAN -->
     <section id="loan" class="panel" aria-hidden="true">
       <h2>Loan EMI Calculator</h2>
-      <label>Loan amount (expression)</label><input id="loanP" type="text" aria-label="loan amount" placeholder="e.g. 10000*1">
-      <label>Annual interest (%) (expression)</label><input id="loanR" type="text" aria-label="loan rate" placeholder="e.g. 7">
-      <label>Tenor (years) (expression)</label><input id="loanT" type="text" aria-label="loan years" placeholder="e.g. 3">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="loanCalculate()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('loan')">Reset</button>
-      </div>
-      <div id="loanError" class="error"></div>
+      <label>Loan amount (expression)</label><input id="loanP" type="text" placeholder="e.g. 10000">
+      <label>Annual interest % (expression)</label><input id="loanR" type="text" placeholder="e.g. 7">
+      <label>Tenor (years) (expression)</label><input id="loanT" type="text" placeholder="e.g. 3">
       <div id="loanResult" class="result">Result: -</div>
+      <div class="op-row">
+        <button onclick="loanUseAns()">Ans</button>
+        <button onclick="loanCE()">CE</button>
+      </div>
+      <button class="btn" onclick="loanEvaluate()">Calculate</button>
+      <div id="loanError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Percentage -->
+    <!-- PERCENTAGE -->
     <section id="percentage" class="panel" aria-hidden="true">
       <h2>Percentage Calculator</h2>
-      <select id="percentMode" aria-label="percentage mode">
-        <option value="of">X% of Y</option>
-        <option value="what">X is what % of Y</option>
-        <option value="change">% Change (from X to Y)</option>
-      </select>
-      <label>First value (expression)</label><input type="text" id="p1" placeholder="e.g. 20 or 20+5">
-      <label>Second value (expression)</label><input type="text" id="p2" placeholder="e.g. 200 or 100+100">
-      <button class="btn" onclick="calcPercentage()">Calculate</button>
-      <button class="ghost" onclick="resetPanel('percentage')">Reset</button>
-      <div id="pResult" class="result">Result: -</div>
-      <div id="pError" class="error"></div>
+      <label>Mode</label>
+      <select id="pctMode"><option value="of">X% of Y</option><option value="what">X is what % of Y</option><option value="change">Percent change</option></select>
+      <label>Value A (expression)</label><input id="pctA" type="text" placeholder="e.g. 20">
+      <label>Value B (expression)</label><input id="pctB" type="text" placeholder="e.g. 200">
+      <div id="pctResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="pctUseAns()">Ans</button><button onclick="pctCE()">CE</button></div>
+      <button class="btn" onclick="percentageEvaluate()">Calculate</button>
+      <div id="pctError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
     <!-- BMI -->
     <section id="bmi" class="panel" aria-hidden="true">
       <h2>BMI Calculator</h2>
-      <label>Weight (kg) — expression allowed</label><input id="bmiW" type="text" aria-label="weight kg" placeholder="e.g. 70 or 65+5">
-      <label>Height (cm) — expression allowed</label><input id="bmiH" type="text" aria-label="height cm" placeholder="e.g. 175">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="bmiCalculate()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('bmi')">Reset</button>
-      </div>
-      <div id="bmiError" class="error"></div>
+      <label>Weight (kg) (expression)</label><input id="bmiW" type="text" placeholder="e.g. 70">
+      <label>Height (cm) (expression)</label><input id="bmiH" type="text" placeholder="e.g. 175">
       <div id="bmiResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="bmiUseAns()">Ans</button><button onclick="bmiCE()">CE</button></div>
+      <button class="btn" onclick="bmiEvaluate()">Calculate</button>
+      <div id="bmiError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Unit Converter -->
+    <!-- UNIT -->
     <section id="unit" class="panel" aria-hidden="true">
       <h2>Unit Converter</h2>
-      <label>Value (expression)</label><input id="unitV" type="text" aria-label="unit value" placeholder="e.g. 1000/2">
+      <label>Value (expression)</label><input id="unitV" type="text" placeholder="e.g. 1000">
       <label>Conversion</label>
-      <select id="unitOp" aria-label="unit op">
+      <select id="unitOp">
         <optgroup label="Length">
           <option value="m-km">m → km</option>
           <option value="km-m">km → m</option>
@@ -323,421 +256,398 @@
           <option value="kg-lb">kg → lb</option>
           <option value="lb-kg">lb → kg</option>
         </optgroup>
-        <optgroup label="Temperature">
+        <optgroup label="Temp">
           <option value="c-f">°C → °F</option>
           <option value="f-c">°F → °C</option>
           <option value="c-k">°C → K</option>
         </optgroup>
-        <optgroup label="Volume">
-          <option value="l-ml">L → mL</option>
-          <option value="ml-l">mL → L</option>
-        </optgroup>
       </select>
-      <div style="margin-top:8px">
-        <button class="btn" onclick="unitConvert()">Convert</button>
-        <button class="ghost" onclick="resetPanel('unit')">Reset</button>
-      </div>
-      <div id="unitError" class="error"></div>
       <div id="unitResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="unitUseAns()">Ans</button><button onclick="unitCE()">CE</button></div>
+      <button class="btn" onclick="unitEvaluate()">Calculate</button>
+      <div id="unitError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Statistics -->
+    <!-- STATISTICS -->
     <section id="statistics" class="panel" aria-hidden="true">
       <h2>Statistics</h2>
-      <label>Numbers (comma separated, each can be expression)</label>
-      <textarea id="statsIn" rows="2" aria-label="statistics input" style="width:100%;border-radius:8px;padding:8px" placeholder="e.g. 2, 3+1, 10/2"></textarea>
-      <div style="margin-top:8px">
-        <button class="btn" onclick="statsCalculate()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('statistics')">Reset</button>
-      </div>
-      <div id="statsError" class="error"></div>
+      <label>Numbers (comma separated, expressions allowed)</label>
+      <textarea id="statsIn" rows="3" placeholder="e.g. 2, 3+1, 10/2"></textarea>
       <div id="statsResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="statsUseAns()">Ans</button><button onclick="statsCE()">CE</button></div>
+      <button class="btn" onclick="statsEvaluate()">Calculate</button>
+      <div id="statsError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
     <!-- GCD / LCM -->
     <section id="gcdlcm" class="panel" aria-hidden="true">
       <h2>GCD & LCM</h2>
-      <label>Numbers (comma separated, each can be expression)</label>
-      <input id="gNums" aria-label="gcd numbers" placeholder="e.g. 12, 6+6, 30/1">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="calcGcdLcm()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('gcdlcm')">Reset</button>
-      </div>
-      <div id="gError" class="error"></div>
+      <label>Numbers (comma separated, expressions allowed)</label>
+      <input id="gList" placeholder="e.g. 12, 18/2, 30">
       <div id="gResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="gUseAns()">Ans</button><button onclick="gCE()">CE</button></div>
+      <button class="btn" onclick="gEvaluate()">Calculate</button>
+      <div id="gError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Matrix -->
+    <!-- MATRIX -->
     <section id="matrix" class="panel" aria-hidden="true">
       <h2>Matrix (2x2 / 3x3)</h2>
-      <div class="small">Enter elements as expressions row-wise separated by commas. For 2x2 enter 4 expressions; for 3x3 enter 9.</div>
-      <label>Matrix A (comma separated)</label>
-      <input id="mA" aria-label="matrix A" placeholder="e.g. 1, 2, 3, 4 or 1+1,2,3,4">
-      <label>Matrix B (optional, comma separated)</label>
-      <input id="mB" aria-label="matrix B">
+      <div class="small">Enter row-wise expressions. 2x2 = 4 items; 3x3 = 9 items.</div>
+      <label>Matrix A (comma separated)</label><input id="mA" placeholder="e.g. 1,2,3,4">
+      <label>Matrix B (optional)</label><input id="mB" placeholder="e.g. 1,0,0,1">
       <label>Operation</label>
-      <select id="mOp" aria-label="matrix op">
-        <option value="det">Determinant (A)</option>
-        <option value="inv">Inverse (A)</option>
-        <option value="trans">Transpose (A)</option>
-        <option value="add">A + B</option>
-        <option value="mul">A × B</option>
-      </select>
-      <div style="margin-top:8px">
-        <button class="btn" onclick="matrixCalc()">Calculate</button>
-        <button class="ghost" onclick="resetPanel('matrix')">Reset</button>
-      </div>
-      <div id="mError" class="error"></div>
+      <select id="mOp"><option value="det">Determinant A</option><option value="inv">Inverse A</option><option value="trans">Transpose A</option><option value="add">A + B</option><option value="mul">A × B</option></select>
       <div id="mResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="mUseAns()">Ans</button><button onclick="mCE()">CE</button></div>
+      <button class="btn" onclick="matrixEvaluate()">Calculate</button>
+      <div id="mError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <!-- Age -->
+    <!-- AGE -->
     <section id="age" class="panel" aria-hidden="true">
       <h2>Age Calculator</h2>
-      <label>Birthdate</label>
-      <input id="birth" type="date" aria-label="birthdate">
-      <label>Reference date (optional — leave blank = today)</label>
-      <input id="refdate" type="date" aria-label="reference date">
-      <div style="margin-top:8px">
-        <button class="btn" onclick="ageCalc()">Calculate Age</button>
-        <button class="ghost" onclick="resetPanel('age')">Reset</button>
-      </div>
-      <div id="ageError" class="error"></div>
+      <label>Birthdate</label><input id="birth" type="date">
+      <label>Reference date (optional; leave blank = today)</label><input id="refdate" type="date">
       <div id="ageResult" class="result">Result: -</div>
+      <div class="op-row"><button onclick="ageUseAns()">Ans</button><button onclick="ageCE()">CE</button></div>
+      <button class="btn" onclick="ageEvaluate()">Calculate</button>
+      <div id="ageError" class="error"></div>
       <button class="back" onclick="goHome()">← Back to Menu</button>
     </section>
 
-    <footer>© Smart Multi Calculator — offline build</footer>
+    <footer style="text-align:center;margin:18px 0;color:var(--muted)">© Smart Multi Calculator — offline build</footer>
   </main>
 
 <script>
-/* ---------------- THEME ---------------- */
+/* ---------------- THEME & NAV ---------------- */
 function toggleTheme(){
   const body=document.body;
   const btn=document.getElementById('themeBtn');
   if(body.dataset.theme==='light'){ body.dataset.theme='dark'; btn.innerText='☀️ Light'; }
   else { body.dataset.theme='light'; btn.innerText='🌙 Dark'; }
 }
-
-/* ---------------- NAV ---------------- */
 function openPanel(id){
   document.getElementById('menuGrid').style.display='none';
-  document.querySelectorAll('.panel').forEach(p=>{
-    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
-  });
+  document.querySelectorAll('.panel').forEach(p=>{ p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true'); });
   const panel=document.getElementById(id);
-  panel.classList.add('active');
-  panel.style.display='block';
-  panel.setAttribute('aria-hidden','false');
+  panel.classList.add('active'); panel.style.display='block'; panel.setAttribute('aria-hidden','false');
 }
 function goHome(){
   document.getElementById('menuGrid').style.display='grid';
-  document.querySelectorAll('.panel').forEach(p=>{
-    p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true');
-  });
+  document.querySelectorAll('.panel').forEach(p=>{ p.classList.remove('active'); p.style.display='none'; p.setAttribute('aria-hidden','true'); });
 }
 
-/* ---------------- EVALUATOR (sanitized-ish) ---------------- */
-function sanitizeAndEval(expr, angleMode = null){
-  if(typeof expr !== 'string' && typeof expr !== 'number') throw new Error('Invalid expression');
+/* ---------------- SANITIZE & EVAL ----------------
+   - replaces ^ -> **
+   - maps functions to Math.*
+   - disallows dangerous tokens (window, document, eval, Function, constructor, prototype, =>)
+*/
+function sanitizeAndEval(expr, angleMode=null){
+  if(expr === null || expr === undefined) throw new Error('Empty');
   let e = String(expr).trim();
-  e = e.replace(/÷/g, '/').replace(/×/g, '*').replace(/\^/g,'**');
-  // map common functions
-  const funcs = ['sqrt','sin','cos','tan','log10','log','ln','exp','abs','ceil','floor','round','pow'];
+  e = e.replace(/÷/g,'/').replace(/×/g,'*').replace(/\^/g,'**');
+  // map common tokens (allow Math.* usage too)
   e = e.replace(/\bpi\b/gi,'Math.PI').replace(/\be\b/gi,'Math.E');
+  const funcs = ['sqrt','sin','cos','tan','log10','log','ln','exp','abs','ceil','floor','round','pow','max','min'];
   funcs.forEach(f=>{
     const r = new RegExp('\\b'+f+'\\s*\\(', 'gi');
     let rep = f;
-    if(f==='ln') rep = 'Math.log(';
-    else if(f==='log10') rep = 'Math.log10(';
-    else if(f==='log') rep = 'Math.log(';
-    else if(f==='pow') rep = 'Math.pow(';
-    else rep = 'Math.'+f+'(';
+    if(f==='ln') rep='Math.log(';
+    else if(f==='log10') rep='Math.log10(';
+    else if(f==='log') rep='Math.log(';
+    else if(f==='pow') rep='Math.pow(';
+    else rep='Math.'+f+'(';
     e = e.replace(r, rep);
   });
   if(!window.Math.log10) Math.log10 = n => Math.log(n)/Math.LN10;
   if(angleMode === 'deg'){
-    e = e.replace(/Math\.sin\(([^)]+)\)/g, 'Math.sin(($1)*Math.PI/180)');
-    e = e.replace(/Math\.cos\(([^)]+)\)/g, 'Math.cos(($1)*Math.PI/180)');
-    e = e.replace(/Math\.tan\(([^)]+)\)/g, 'Math.tan(($1)*Math.PI/180)');
+    e = e.replace(/Math\.sin\(([^)]+)\)/g,'Math.sin(($1)*Math.PI/180)');
+    e = e.replace(/Math\.cos\(([^)]+)\)/g,'Math.cos(($1)*Math.PI/180)');
+    e = e.replace(/Math\.tan\(([^)]+)\)/g,'Math.tan(($1)*Math.PI/180)');
   }
-  const forbidden = ['window','document','constructor','prototype','eval','Function','=>'];
+  const forbidden = ['window','document','constructor','prototype','eval','function','=>','Function'];
   const low = e.toLowerCase();
-  for(const f of forbidden) if(low.includes(f)) throw new Error('Forbidden token in expression');
+  for(const f of forbidden) if(low.includes(f)) throw new Error('Forbidden token');
   try{
-    const fn = new Function('"use strict"; return (' + e + ')');
-    const value = fn();
-    if(typeof value === 'number' && !isNaN(value)) return value;
-    if(typeof value === 'boolean' || typeof value === 'string') return Number(value);
-    return value;
-  } catch(err){
-    throw new Error('Invalid expression');
-  }
+    const fn = new Function('"use strict"; return ('+e+')');
+    const val = fn();
+    if(typeof val === 'number' && !isNaN(val)) return val;
+    if(typeof val === 'boolean' || typeof val === 'string') return Number(val);
+    return val;
+  }catch(err){ throw new Error('Invalid expression'); }
 }
 
-/* ---------------- HELPERS ---------------- */
-function parseListExpressionsAsNumbers(str){
-  if(!str) return [];
-  return str.split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>{
-    try{ return sanitizeAndEval(s); } catch { return NaN; }
-  }).filter(n=>!isNaN(n));
-}
-
-/* ---------------- BASIC (buttons + eval) ---------------- */
-let basicMemory = null;
+/* ---------------- GLOBALS ---------------- */
+let globalAns = null;
 let basicHistory = [];
 
-function basicAppend(tok){
-  const inp=document.getElementById('basicExpr');
-  // when user presses ^ we used ** internally; keypad uses ** already
-  inp.value = (inp.value || '') + tok;
-  inp.focus();
+/* ---------------- BASIC ---------------- */
+function basicInsertOp(op){
+  const el = document.getElementById('basicExpr');
+  el.value = (el.value || '') + op;
+  el.focus();
 }
-function basicBackspace(){
-  const inp=document.getElementById('basicExpr');
-  inp.value = inp.value.slice(0,-1);
-  inp.focus();
+function basicCE(){ document.getElementById('basicExpr').value=''; document.getElementById('basicError').innerText=''; }
+function basicToggleSign(){
+  const el=document.getElementById('basicExpr');
+  const v=el.value.trim();
+  if(!v) return;
+  if(v[0]==='-') el.value = v.slice(1);
+  else el.value = '-'+v;
 }
-function basicClear(){
-  document.getElementById('basicExpr').value='';
-  document.getElementById('basicResult').innerText='Result: -';
-  document.getElementById('basicError').innerText='';
-}
-function basicEval(){
+function basicUseAns(){ if(globalAns!==null) document.getElementById('basicExpr').value += globalAns; }
+function basicEvaluate(){
   const expr = document.getElementById('basicExpr').value;
-  const err=document.getElementById('basicError'), out=document.getElementById('basicResult');
-  err.innerText=''; out.innerText='Result: -';
-  if(expr===undefined || expr===null || String(expr).trim()===''){ err.innerText='Enter expression'; return; }
+  const resEl=document.getElementById('basicResult'), errEl=document.getElementById('basicError');
+  resEl.innerText='Result: -'; errEl.innerText='';
+  if(!expr || expr.trim()===''){ errEl.innerText='Enter expression'; return; }
   try{
     const val = sanitizeAndEval(expr);
-    out.innerText = 'Result: ' + val;
+    resEl.innerText = 'Result: ' + val;
+    globalAns = val;
     basicHistory.push(`${expr} = ${val}`);
     if(basicHistory.length>20) basicHistory.shift();
     renderBasicHistory();
-  }catch(e){
-    err.innerText = e.message || 'Invalid expression';
-  }
+  }catch(err){ errEl.innerText = err.message; }
 }
 function renderBasicHistory(){
   const box=document.getElementById('basicHistory');
-  if(!box) return;
   box.innerHTML = basicHistory.slice().reverse().map(s=>`<div>${s}</div>`).join('');
 }
-function basicMemoryAdd(){
-  const res=document.getElementById('basicResult').innerText.replace('Result: ','');
-  if(res && res!=='-'){ basicMemory = parseFloat(res); alert('Saved to memory'); } else alert('No result to save');
-}
-function basicMemoryRecall(){
-  if(basicMemory!==null) document.getElementById('basicExpr').value += basicMemory;
-  else alert('Memory empty');
-}
-function basicMemoryClear(){ basicMemory=null; alert('Memory cleared'); }
 
-/* ---------------- SCIENTIFIC BUTTON HELPERS ---------------- */
-function sciAppend(tok){
-  const inp = document.getElementById('s_expr');
-  inp.value = (inp.value || '') + tok;
-  inp.focus();
+/* ---------------- SCIENTIFIC ---------------- */
+function sciInsert(token){
+  const el=document.getElementById('sExpr');
+  el.value = (el.value || '') + token;
+  el.focus();
 }
-function scientificCalculate(){
-  const expr=document.getElementById('s_expr').value;
+function sciCE(){ document.getElementById('sExpr').value=''; document.getElementById('sError').innerText=''; }
+function sciUseAns(){ if(globalAns!==null) document.getElementById('sExpr').value += globalAns; }
+function scientificEvaluate(){
+  const expr=document.getElementById('sExpr').value;
   const mode=document.getElementById('s_mode').value;
-  const err=document.getElementById('sError'), out=document.getElementById('sResult');
-  err.innerText=''; out.innerText='Result: -';
-  if(!expr || expr.trim()===''){ err.innerText='Enter expression.'; return; }
+  const resEl=document.getElementById('sResult'), errEl=document.getElementById('sError');
+  resEl.innerText='Result: -'; errEl.innerText='';
+  if(!expr || expr.trim()===''){ errEl.innerText='Enter expression'; return; }
   try{
-    const value = sanitizeAndEval(expr, mode);
-    out.innerText = 'Result: ' + value;
-  }catch(e){
-    err.innerText = e.message || 'Invalid expression';
-  }
+    const val = sanitizeAndEval(expr, mode);
+    resEl.innerText = 'Result: ' + val;
+    globalAns = val;
+  }catch(err){ errEl.innerText = err.message; }
 }
 
 /* ---------------- PROGRAMMER ---------------- */
-function programmerCalc(){
-  const aExpr = document.getElementById('progInput').value;
-  const bExpr = document.getElementById('progSecond').value;
-  const op = document.getElementById('progOp').value;
-  const err=document.getElementById('progError'), out=document.getElementById('progResult');
-  err.innerText=''; out.innerText='Result: -';
+function progCE(){ document.getElementById('progA').value=''; document.getElementById('progB').value=''; document.getElementById('progError').innerText=''; }
+function progUseAns(){ if(globalAns!==null) document.getElementById('progA').value += globalAns; }
+function programmerEvaluate(){
+  const aExpr=document.getElementById('progA').value;
+  const bExpr=document.getElementById('progB').value;
+  const op=document.getElementById('progOp').value;
+  const resEl=document.getElementById('progResult'), errEl=document.getElementById('progError');
+  resEl.innerText='Result: -'; errEl.innerText='';
   try{
-    const aVal = sanitizeAndEval(aExpr);
-    if(isNaN(aVal)) { err.innerText='Invalid primary operand'; return; }
-    let secVal = null;
-    if(['and','or','xor','shl','shr'].includes(op)){
-      secVal = sanitizeAndEval(bExpr);
-      if(isNaN(secVal)){ err.innerText='Invalid second operand'; return; }
-    }
-    let r;
-    if(op==='toBin') r = (aVal|0).toString(2);
-    if(op==='toHex') r = '0x'+(aVal|0).toString(16).toUpperCase();
-    if(op==='toOct') r = (aVal|0).toString(8);
-    if(op==='and') r = (aVal & secVal);
-    if(op==='or') r = (aVal | secVal);
-    if(op==='xor') r = (aVal ^ secVal);
-    if(op==='shl') r = (aVal << secVal);
-    if(op==='shr') r = (aVal >> secVal);
-    out.innerText = 'Result: '+ r;
-  }catch(e){ err.innerText = e.message || 'Error computing'; }
+    const a = sanitizeAndEval(aExpr);
+    if(['and','or','xor','shl','shr'].includes(op) && (bExpr===null||bExpr==='')){ errEl.innerText='Second operand required'; return; }
+    let b = null;
+    if(bExpr) b = sanitizeAndEval(bExpr);
+    if(isNaN(a) || (bExpr && isNaN(b))){ errEl.innerText='Invalid operand'; return; }
+    let out;
+    if(op==='toBin') out = (a|0).toString(2);
+    if(op==='toHex') out = '0x'+(a|0).toString(16).toUpperCase();
+    if(op==='toOct') out = (a|0).toString(8);
+    if(op==='and') out = (a & b);
+    if(op==='or') out = (a | b);
+    if(op==='xor') out = (a ^ b);
+    if(op==='shl') out = (a << b);
+    if(op==='shr') out = (a >> b);
+    resEl.innerText = 'Result: ' + out;
+    globalAns = out;
+  }catch(err){ errEl.innerText = err.message; }
 }
 
-/* ---------------- FINANCE / LOAN / PERCENTAGE / BMI / UNIT / STATISTICS / GCD-LCM / MATRIX / AGE ---------------- */
-function financeCalc(){
+/* ---------------- FINANCE ---------------- */
+function finCE(){ document.getElementById('finP').value=''; document.getElementById('finR').value=''; document.getElementById('finT').value=''; document.getElementById('finError').innerText=''; }
+function finUseAns(){ if(globalAns!==null) document.getElementById('finP').value += globalAns; }
+function financeEvaluate(){
   try{
     const type=document.getElementById('finType').value;
     const P = sanitizeAndEval(document.getElementById('finP').value);
     const R = sanitizeAndEval(document.getElementById('finR').value)/100;
     const T = sanitizeAndEval(document.getElementById('finT').value);
-    const e=document.getElementById('finError'), o=document.getElementById('finResult');
-    e.innerText=''; o.innerText='Result: -';
-    if([P,R,T].some(v=>isNaN(v))){ e.innerText='Fill all fields with valid expressions'; return; }
+    const resEl=document.getElementById('finResult'), errEl=document.getElementById('finError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if([P,R,T].some(v=>isNaN(v))){ errEl.innerText='Fill valid expressions'; return; }
     const amount = (type==='simple') ? P*(1+R*T) : P*Math.pow(1+R,T);
-    o.innerText='Result: '+ amount.toFixed(4);
-  }catch(err){
-    document.getElementById('finError').innerText = err.message || 'Invalid expression';
-  }
+    resEl.innerText = 'Result: ' + amount.toFixed(6);
+    globalAns = amount;
+  }catch(err){ document.getElementById('finError').innerText = err.message; }
 }
-function loanCalculate(){
+
+/* ---------------- LOAN ---------------- */
+function loanCE(){ document.getElementById('loanP').value=''; document.getElementById('loanR').value=''; document.getElementById('loanT').value=''; document.getElementById('loanError').innerText=''; }
+function loanUseAns(){ if(globalAns!==null) document.getElementById('loanP').value += globalAns; }
+function loanEvaluate(){
   try{
     const P = sanitizeAndEval(document.getElementById('loanP').value);
     const annual = sanitizeAndEval(document.getElementById('loanR').value);
     const years = sanitizeAndEval(document.getElementById('loanT').value);
-    const e=document.getElementById('loanError'), o=document.getElementById('loanResult');
-    e.innerText=''; o.innerText='Result: -';
-    if([P,annual,years].some(v=>isNaN(v))){ e.innerText='Fill all fields with valid expressions'; return; }
+    const resEl=document.getElementById('loanResult'), errEl=document.getElementById('loanError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if([P,annual,years].some(v=>isNaN(v))){ errEl.innerText='Fill valid expressions'; return; }
     const r = annual/100/12; const n = years*12;
-    if(r===0){ o.innerText = 'Monthly EMI: ' + (P/n).toFixed(4); return; }
-    const M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    o.innerText = 'Monthly EMI: '+ M.toFixed(4);
-  }catch(err){
-    document.getElementById('loanError').innerText = err.message || 'Invalid expression';
-  }
+    let M;
+    if(r===0) M = P/n; else M = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    resEl.innerText = 'Monthly EMI: ' + M.toFixed(6);
+    globalAns = M;
+  }catch(err){ document.getElementById('loanError').innerText = err.message; }
 }
-function calcPercentage(){
-  const mode = document.getElementById('percentMode').value;
-  const aStr = document.getElementById('p1').value;
-  const bStr = document.getElementById('p2').value;
-  const resEl = document.getElementById('pResult');
-  const errEl = document.getElementById('pError');
-  resEl.innerText='Result: -'; errEl.innerText='';
+
+/* ---------------- PERCENTAGE ---------------- */
+function pctCE(){ document.getElementById('pctA').value=''; document.getElementById('pctB').value=''; document.getElementById('pctError').innerText=''; }
+function pctUseAns(){ if(globalAns!==null) document.getElementById('pctA').value += globalAns; }
+function percentageEvaluate(){
   try{
-    const a = sanitizeAndEval(aStr);
-    const b = sanitizeAndEval(bStr);
-    if(isNaN(a) || isNaN(b)){ errEl.innerText='Please enter valid expressions'; return; }
-    let res='';
-    if(mode==='of') res = `${a}% of ${b} = ${(a/100)*b}`;
-    if(mode==='what') res = `${a} is ${(a/b*100).toFixed(4)}% of ${b}`;
-    if(mode==='change') res = `Change from ${a} to ${b} = ${(((b-a)/a)*100).toFixed(4)}%`;
-    resEl.innerText = res;
-  }catch(err){
-    errEl.innerText = err.message || 'Invalid expression';
-  }
+    const mode=document.getElementById('pctMode').value;
+    const a = sanitizeAndEval(document.getElementById('pctA').value);
+    const b = sanitizeAndEval(document.getElementById('pctB').value);
+    const resEl=document.getElementById('pctResult'), errEl=document.getElementById('pctError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if(isNaN(a) || isNaN(b)){ errEl.innerText='Fill valid expressions'; return; }
+    let out;
+    if(mode==='of') out = `${a}% of ${b} = ${(a/100)*b}`;
+    if(mode==='what') out = `${a} is ${(a/b*100).toFixed(6)}% of ${b}`;
+    if(mode==='change') out = `Change = ${(((b-a)/a)*100).toFixed(6)}%`;
+    resEl.innerText = 'Result: ' + out;
+    globalAns = out;
+  }catch(err){ document.getElementById('pctError').innerText = err.message; }
 }
-function bmiCalculate(){
+
+/* ---------------- BMI ---------------- */
+function bmiCE(){ document.getElementById('bmiW').value=''; document.getElementById('bmiH').value=''; document.getElementById('bmiError').innerText=''; }
+function bmiUseAns(){ if(globalAns!==null) document.getElementById('bmiW').value += globalAns; }
+function bmiEvaluate(){
   try{
     const w = sanitizeAndEval(document.getElementById('bmiW').value);
     const hcm = sanitizeAndEval(document.getElementById('bmiH').value);
-    const e=document.getElementById('bmiError'), o=document.getElementById('bmiResult');
-    e.innerText=''; o.innerText='Result: -';
-    if(isNaN(w) || isNaN(hcm) || hcm===0){ e.innerText='Enter valid weight & height expressions'; return; }
+    const resEl=document.getElementById('bmiResult'), errEl=document.getElementById('bmiError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if(isNaN(w) || isNaN(hcm) || hcm==0){ errEl.innerText='Fill valid expressions'; return; }
     const h = hcm/100;
     const bmi = w/(h*h);
     let cat = bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
-    o.innerText = `BMI: ${bmi.toFixed(4)} (${cat})`;
-  }catch(err){
-    document.getElementById('bmiError').innerText = err.message || 'Invalid expression';
-  }
+    resEl.innerText = `Result: ${bmi.toFixed(4)} (${cat})`;
+    globalAns = bmi;
+  }catch(err){ document.getElementById('bmiError').innerText = err.message; }
 }
-function unitConvert(){
+
+/* ---------------- UNIT ---------------- */
+function unitCE(){ document.getElementById('unitV').value=''; document.getElementById('unitError').innerText=''; }
+function unitUseAns(){ if(globalAns!==null) document.getElementById('unitV').value += globalAns; }
+function unitEvaluate(){
   try{
     const v = sanitizeAndEval(document.getElementById('unitV').value);
     const op = document.getElementById('unitOp').value;
-    const e=document.getElementById('unitError'), o=document.getElementById('unitResult');
-    e.innerText=''; o.innerText='Result: -';
-    if(isNaN(v)){ e.innerText='Enter valid expression'; return; }
-    let res;
+    const resEl=document.getElementById('unitResult'), errEl=document.getElementById('unitError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if(isNaN(v)){ errEl.innerText='Fill valid expression'; return; }
+    let out;
     switch(op){
-      case 'm-km': res = (v/1000) + ' km'; break;
-      case 'km-m': res = (v*1000) + ' m'; break;
-      case 'm-mi': res = (v/1609.344).toFixed(6) + ' miles'; break;
-      case 'mi-m': res = (v*1609.344).toFixed(3) + ' m'; break;
-      case 'kg-lb': res = (v*2.20462).toFixed(4) + ' lb'; break;
-      case 'lb-kg': res = (v/2.20462).toFixed(4) + ' kg'; break;
-      case 'c-f': res = ((v*9/5)+32).toFixed(2)+' °F'; break;
-      case 'f-c': res = ((v-32)*5/9).toFixed(2)+' °C'; break;
-      case 'c-k': res = (v+273.15).toFixed(2)+' K'; break;
-      case 'l-ml': res = (v*1000)+' mL'; break;
-      case 'ml-l': res = (v/1000)+' L'; break;
-      default: res = 'Unsupported op'; break;
+      case 'm-km': out = (v/1000)+' km'; break;
+      case 'km-m': out = (v*1000)+' m'; break;
+      case 'm-mi': out = (v/1609.344).toFixed(6)+' miles'; break;
+      case 'mi-m': out = (v*1609.344).toFixed(3)+' m'; break;
+      case 'kg-lb': out = (v*2.20462).toFixed(4)+' lb'; break;
+      case 'lb-kg': out = (v/2.20462).toFixed(4)+' kg'; break;
+      case 'c-f': out = ((v*9/5)+32).toFixed(2)+' °F'; break;
+      case 'f-c': out = ((v-32)*5/9).toFixed(2)+' °C'; break;
+      case 'c-k': out = (v+273.15).toFixed(2)+' K'; break;
+      default: out = 'Unsupported'; break;
     }
-    o.innerText = 'Result: '+res;
-  }catch(err){
-    document.getElementById('unitError').innerText = err.message || 'Invalid expression';
-  }
+    resEl.innerText = 'Result: ' + out;
+    globalAns = out;
+  }catch(err){ document.getElementById('unitError').innerText = err.message; }
 }
-function statsCalculate(){
-  const raw = document.getElementById('statsIn').value;
-  const e=document.getElementById('statsError'), o=document.getElementById('statsResult');
-  e.innerText=''; o.innerText='Result: -';
-  const arr = parseListExpressionsAsNumbers(raw);
-  if(arr.length===0){ e.innerText='Enter numbers separated by comma (expressions allowed)'; return; }
-  const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
-  const sorted = arr.slice().sort((a,b)=>a-b);
-  const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
-  const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
-  const maxF = Math.max(...Object.values(freq));
-  const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
-  const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
-  const sd = Math.sqrt(variance);
-  const range = sorted[sorted.length-1] - sorted[0];
-  o.innerText = `Mean: ${mean.toFixed(4)}, Median: ${median}, Mode: ${modes}, Variance: ${variance.toFixed(4)}, StdDev: ${sd.toFixed(4)}, Range: ${range}`;
-}
-function calcGcdLcm(){
-  const raw = document.getElementById('gNums').value;
-  const e=document.getElementById('gError'), o=document.getElementById('gResult');
-  e.innerText=''; o.innerText='Result: -';
+
+/* ---------------- STATISTICS ---------------- */
+function statsCE(){ document.getElementById('statsIn').value=''; document.getElementById('statsError').innerText=''; }
+function statsUseAns(){ if(globalAns!==null) document.getElementById('statsIn').value += globalAns; }
+function statsEvaluate(){
   try{
-    const arr = (raw||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>sanitizeAndEval(s)).map(n=>Math.trunc(n)).filter(n=>!isNaN(n));
-    if(arr.length===0){ e.innerText='Enter integer expressions separated by comma'; return; }
-    let g = Math.abs(arr[0]); let L = Math.abs(arr[0]);
-    for(let i=1;i<arr.length;i++){ g = gcd(g, arr[i]); L = lcm(L, arr[i]); }
-    o.innerText = `GCD: ${g}, LCM: ${L}`;
-  }catch(err){ e.innerText = err.message || 'Invalid expression in list'; }
+    const raw = document.getElementById('statsIn').value;
+    const arr = (raw||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>sanitizeAndEval(s)).filter(n=>!isNaN(n));
+    const resEl=document.getElementById('statsResult'), errEl=document.getElementById('statsError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if(arr.length===0){ errEl.innerText='Enter numbers'; return; }
+    const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+    const sorted = arr.slice().sort((a,b)=>a-b);
+    const median = sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+    const freq = {}; arr.forEach(v=>freq[v]=(freq[v]||0)+1);
+    const maxF = Math.max(...Object.values(freq));
+    const modes = Object.keys(freq).filter(k=>freq[k]===maxF).join(', ');
+    const variance = arr.reduce((a,b)=>a+Math.pow(b-mean,2),0)/arr.length;
+    const sd = Math.sqrt(variance);
+    const range = sorted[sorted.length-1]-sorted[0];
+    resEl.innerText = `Result: Mean ${mean.toFixed(4)}, Median ${median}, Mode ${modes}, SD ${sd.toFixed(4)}, Range ${range}`;
+    globalAns = mean;
+  }catch(err){ document.getElementById('statsError').innerText = err.message; }
 }
+
+/* ---------------- GCD / LCM ---------------- */
+function gCE(){ document.getElementById('gList').value=''; document.getElementById('gError').innerText=''; }
+function gUseAns(){ if(globalAns!==null) document.getElementById('gList').value += globalAns; }
 function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
 function lcm(a,b){ if(a===0||b===0) return 0; return Math.abs(a*b)/gcd(a,b); }
+function gEvaluate(){
+  try{
+    const raw = document.getElementById('gList').value;
+    const arr = (raw||'').split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>Math.trunc(sanitizeAndEval(s))).filter(n=>!isNaN(n));
+    const resEl=document.getElementById('gResult'), errEl=document.getElementById('gError');
+    resEl.innerText='Result: -'; errEl.innerText='';
+    if(arr.length===0){ errEl.innerText='Enter integers'; return; }
+    let G = arr[0], L = arr[0];
+    for(let i=1;i<arr.length;i++){ G=gcd(G,arr[i]); L=lcm(L,arr[i]); }
+    resEl.innerText = `Result: GCD ${G}, LCM ${L}`;
+    globalAns = G;
+  }catch(err){ document.getElementById('gError').innerText = err.message; }
+}
 
-function parseMatrix(arr){
-  const len=arr.length;
-  if(len===4) { return {n:2, mat:[[arr[0],arr[1]],[arr[2],arr[3]]]}; }
-  if(len===9) { return {n:3, mat:[[arr[0],arr[1],arr[2]],[arr[3],arr[4],arr[5]],[arr[6],arr[7],arr[8]]]}; }
+/* ---------------- MATRIX ---------------- */
+function mCE(){ document.getElementById('mA').value=''; document.getElementById('mB').value=''; document.getElementById('mError').innerText=''; }
+function mUseAns(){ if(globalAns!==null) document.getElementById('mA').value += globalAns; }
+function parseMatrixFromVals(vals){
+  if(vals.length===4) return {n:2, mat:[[vals[0],vals[1]],[vals[2],vals[3]]]};
+  if(vals.length===9) return {n:3, mat:[[vals[0],vals[1],vals[2]],[vals[3],vals[4],vals[5]],[vals[6],vals[7],vals[8]]]};
   return null;
 }
 function det2(m){ return m[0][0]*m[1][1]-m[0][1]*m[1][0]; }
-function det3(m){ return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1]) - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0]) + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]); }
-function inverse2(m){ const d = det2(m); if(d===0) return null; return [[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d,m[0][0]/d]]; }
-function transpose(m){ const n=m.length; const res = Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[j][i]=m[i][j]; return res; }
-function multiply(A,B){ const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) res[i][j]+=A[i][k]*B[k][j]; return res; }
-function addMatrix(A,B){ const n=A.length; const res=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) res[i][j]=A[i][j]+B[i][j]; return res; }
-
-function matrixCalc(){
-  const Araw = (document.getElementById('mA').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
-  const Brow = (document.getElementById('mB').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
-  const op = document.getElementById('mOp').value;
-  const e=document.getElementById('mError'), o=document.getElementById('mResult');
-  e.innerText=''; o.innerText='Result: -';
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1]) - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0]) + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function inverse2(m){
+  const d = det2(m); if(d===0) return null; return [[m[1][1]/d, -m[0][1]/d],[-m[1][0]/d, m[0][0]/d]];
+}
+function transpose(m){ const n=m.length; const r=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) r[j][i]=m[i][j]; return r; }
+function multiply(A,B){ const n=A.length; const R=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) R[i][j]+=A[i][k]*B[k][j]; return R; }
+function addMatrix(A,B){ const n=A.length; const R=Array.from({length:n},()=>Array(n).fill(0)); for(let i=0;i<n;i++) for(let j=0;j<n;j++) R[i][j]=A[i][j]+B[i][j]; return R; }
+function matrixEvaluate(){
   try{
+    const Araw=(document.getElementById('mA').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
+    const Braw=(document.getElementById('mB').value||'').split(',').map(s=>s.trim()).filter(s=>s!=='');
+    const op=document.getElementById('mOp').value;
+    const resEl=document.getElementById('mResult'), errEl=document.getElementById('mError');
+    resEl.innerText='Result: -'; errEl.innerText='';
     const Avals = Araw.map(s=>sanitizeAndEval(s));
-    const MA = parseMatrix(Avals);
-    if(!MA){ e.innerText='Matrix A must be 4(2x2) or 9(3x3) expressions'; return; }
-    if(op==='det'){ const d = MA.n===2? det2(MA.mat) : det3(MA.mat); o.innerText = 'Determinant: ' + d; return; }
+    const MA = parseMatrixFromVals(Avals);
+    if(!MA){ errEl.innerText='Matrix A must be 4 or 9 expressions'; return; }
+    if(op==='det'){ const d = MA.n===2?det2(MA.mat):det3(MA.mat); resEl.innerText='Result: '+d; globalAns=d; return; }
     if(op==='inv'){
-      if(MA.n===2){ const inv= inverse2(MA.mat); if(!inv){ e.innerText='Matrix singular'; return;} o.innerText='Inverse: '+ JSON.stringify(inv); return; }
-      const d = det3(MA.mat); if(d===0){ e.innerText='Matrix singular'; return; }
+      if(MA.n===2){ const inv=inverse2(MA.mat); if(!inv){ errEl.innerText='Singular matrix'; return;} resEl.innerText='Result: '+JSON.stringify(inv); globalAns=inv; return; }
+      const d = det3(MA.mat); if(d===0){ errEl.innerText='Singular matrix'; return; }
       const m=MA.mat;
       const cof = [
         [ (m[1][1]*m[2][2]-m[1][2]*m[2][1]), -(m[1][0]*m[2][2]-m[1][2]*m[2][0]),  (m[1][0]*m[2][1]-m[1][1]*m[2][0]) ],
@@ -745,72 +655,65 @@ function matrixCalc(){
         [ (m[0][1]*m[1][2]-m[0][2]*m[1][1]), -(m[0][0]*m[1][2]-m[0][2]*m[1][0]),  (m[0][0]*m[1][1]-m[0][1]*m[1][0]) ]
       ];
       const adj = transpose(cof);
-      const inv = adj.map(row => row.map(v=>v/d));
-      o.innerText = 'Inverse: ' + JSON.stringify(inv.map(r=>r.map(v=>parseFloat(v.toFixed(6)))));
+      const inv = adj.map(row=>row.map(v=>v/d));
+      resEl.innerText='Result: '+JSON.stringify(inv);
+      globalAns=inv;
       return;
     }
-    if(op==='trans'){ const t = transpose(MA.mat); o.innerText = 'Transpose: ' + JSON.stringify(t); return; }
-    const Bvals = Brow.map(s=>sanitizeAndEval(s));
-    const MB = parseMatrix(Bvals);
-    if(!MB){ e.innerText='Matrix B required for this operation (same size as A)'; return; }
-    if(MA.n !== MB.n){ e.innerText='Matrix sizes must match'; return; }
-    if(op==='add'){ const R = addMatrix(MA.mat,MB.mat); o.innerText = 'A+B = ' + JSON.stringify(R); return; }
-    if(op==='mul'){ const R = multiply(MA.mat,MB.mat); o.innerText = 'A×B = ' + JSON.stringify(R); return; }
-  }catch(err){
-    e.innerText = err.message || 'Invalid expression in matrix';
-  }
+    if(op==='trans'){ resEl.innerText='Result: '+JSON.stringify(transpose(MA.mat)); globalAns=transpose(MA.mat); return; }
+    // add/mul require B
+    const Bvals = Braw.map(s=>sanitizeAndEval(s));
+    const MB = parseMatrixFromVals(Bvals);
+    if(!MB){ errEl.innerText='Matrix B required and must match size'; return; }
+    if(MA.n !== MB.n){ errEl.innerText='Matrix sizes must match'; return; }
+    if(op==='add'){ const R=addMatrix(MA.mat,MB.mat); resEl.innerText='Result: '+JSON.stringify(R); globalAns=R; return; }
+    if(op==='mul'){ const R=multiply(MA.mat,MB.mat); resEl.innerText='Result: '+JSON.stringify(R); globalAns=R; return; }
+  }catch(err){ document.getElementById('mError').innerText = err.message; }
 }
 
 /* ---------------- AGE ---------------- */
-function ageCalc(){
+function ageCE(){ document.getElementById('birth').value=''; document.getElementById('refdate').value=''; document.getElementById('ageError').innerText=''; }
+function ageUseAns(){ /* not applicable */ }
+function ageEvaluate(){
   const b=document.getElementById('birth').value;
   const ref=document.getElementById('refdate').value;
-  const e=document.getElementById('ageError'), o=document.getElementById('ageResult');
-  e.innerText=''; o.innerText='Result: -';
-  if(!b){ e.innerText='Select birthdate'; return; }
-  const birth = new Date(b);
-  const now = ref ? new Date(ref) : new Date();
-  if(isNaN(birth) || isNaN(now)){ e.innerText='Invalid dates'; return; }
-  if(now < birth){ e.innerText='Reference date must be after birthdate'; return; }
-  let y = now.getFullYear() - birth.getFullYear();
-  let m = now.getMonth() - birth.getMonth();
-  let d = now.getDate() - birth.getDate();
-  if(d<0){ m-=1; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); d += prevMonth.getDate(); }
+  const resEl=document.getElementById('ageResult'), errEl=document.getElementById('ageError');
+  resEl.innerText='Result: -'; errEl.innerText='';
+  if(!b){ errEl.innerText='Select birthdate'; return; }
+  const birth=new Date(b); const now = ref? new Date(ref): new Date();
+  if(isNaN(birth)||isNaN(now)){ errEl.innerText='Invalid date'; return; }
+  if(now<birth){ errEl.innerText='Reference must be after birth'; return; }
+  let y = now.getFullYear()-birth.getFullYear();
+  let m = now.getMonth()-birth.getMonth();
+  let d = now.getDate()-birth.getDate();
+  if(d<0){ m-=1; const pm=new Date(now.getFullYear(),now.getMonth(),0); d+=pm.getDate(); }
   if(m<0){ y-=1; m+=12; }
-  o.innerText = `Age: ${y} years, ${m} months, ${d} days`;
+  resEl.innerText = `Result: ${y} years, ${m} months, ${d} days`;
+  globalAns = y;
 }
 
-/* ---------------- RESET PANEL ---------------- */
-function resetPanel(id){
-  const panel = document.getElementById(id);
-  panel.querySelectorAll('input,textarea').forEach(inp=> inp.value='');
-  panel.querySelectorAll('select').forEach(s=> s.selectedIndex=0);
-  panel.querySelectorAll('.result').forEach(r=> r.innerText='Result: -');
-  panel.querySelectorAll('.error').forEach(er=> er.innerText='');
-}
-
-/* ---------------- KEYBOARD: Enter to calculate ---------------- */
+/* ---------------- KEYBIND: Enter triggers active panel calculation ---------------- */
 document.addEventListener('keydown', function(e){
-  if(e.key==='Enter'){
+  if(e.key === 'Enter'){
     const active = document.querySelector('.panel.active');
     if(!active) return;
     const id = active.id;
-    if(id==='basic') basicEval();
-    if(id==='scientific') scientificCalculate();
-    if(id==='programmer') programmerCalc();
-    if(id==='finance') financeCalc();
-    if(id==='loan') loanCalculate();
-    if(id==='percentage') calcPercentage();
-    if(id==='bmi') bmiCalculate();
-    if(id==='unit') unitConvert();
-    if(id==='statistics') statsCalculate();
-    if(id==='gcdlcm') calcGcdLcm();
-    if(id==='matrix') matrixCalc();
-    if(id==='age') ageCalc();
+    if(id==='basic') basicEvaluate();
+    if(id==='scientific') scientificEvaluate();
+    if(id==='programmer') programmerEvaluate();
+    if(id==='finance') financeEvaluate();
+    if(id==='loan') loanEvaluate();
+    if(id==='percentage') percentageEvaluate();
+    if(id==='bmi') bmiEvaluate();
+    if(id==='unit') unitEvaluate();
+    if(id==='statistics') statsEvaluate();
+    if(id==='gcdlcm') gEvaluate();
+    if(id==='matrix') matrixEvaluate();
+    if(id==='age') ageEvaluate();
   }
 });
 
-/* ---------------- INITIALIZE ---------------- */
+/* ---------------- INITIAL RENDER ---------------- */
 renderBasicHistory();
 </script>
 </body>
